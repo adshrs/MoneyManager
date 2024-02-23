@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
@@ -17,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.moneymanager.components.TableRow
 import com.example.moneymanager.ui.theme.BackgroundElevated
+import com.example.moneymanager.ui.theme.DividerColor
 import com.example.moneymanager.ui.theme.TopAppBarBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,12 +37,15 @@ fun Settings(navController: NavController) {
 			Column(modifier = Modifier.padding(innerPadding)) {
 				Column(modifier = Modifier
 					.padding(16.dp)
-					.clip(RoundedCornerShape(6.dp))
+					.clip(RoundedCornerShape(8.dp))
 					.background(BackgroundElevated)
 					.fillMaxWidth()
 				) {
-					TableRow("Categories", hasArrow = true)
-					TableRow("Erase all Data", isDestructive = true)
+					TableRow("Categories", hasArrow = true, onClick = {
+						navController.navigate("settings/categories")
+					})
+					Divider(thickness = 1.dp, color = DividerColor)
+					TableRow("Erase all Data", isDestructive = true, onClick = {})
 				}
 			}
 		}

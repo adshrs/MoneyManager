@@ -1,5 +1,6 @@
 package com.example.moneymanager.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,12 +17,18 @@ import com.example.moneymanager.ui.theme.TextPrimary
 import com.example.moneymanager.ui.theme.Typography
 
 @Composable
-fun TableRow(label: String, hasArrow: Boolean = false, isDestructive: Boolean = false) {
+fun TableRow(
+	label: String,
+	onClick: (String) -> Unit,
+	hasArrow: Boolean = false,
+	isDestructive: Boolean = false
+) {
 	val textColor = if (isDestructive) Destructive else TextPrimary
-	
+
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
+			.clickable { onClick(label) }
 			.padding(horizontal = 16.dp, vertical = 10.dp),
 		horizontalArrangement = Arrangement.SpaceBetween
 	) {
