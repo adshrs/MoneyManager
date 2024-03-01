@@ -1,6 +1,7 @@
 package com.example.moneymanager.pages
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -41,11 +42,11 @@ fun Settings(navController: NavController) {
 					.background(BackgroundElevated)
 					.fillMaxWidth()
 				) {
-					TableRow("Categories", hasArrow = true, onClick = {
+					TableRow("Categories", hasArrow = true, modifier = Modifier.clickable{
 						navController.navigate("settings/categories")
 					})
 					Divider(thickness = 1.dp, color = DividerColor)
-					TableRow("Erase all Data", isDestructive = true, onClick = {})
+					TableRow("Erase all Data", isDestructive = true)
 				}
 			}
 		}

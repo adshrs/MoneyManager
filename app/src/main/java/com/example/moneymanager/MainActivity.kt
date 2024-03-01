@@ -22,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.moneymanager.pages.Add
 import com.example.moneymanager.pages.Expenses
 import com.example.moneymanager.pages.Settings
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
@@ -126,7 +127,7 @@ class MainActivity : ComponentActivity() {
 										.fillMaxSize()
 										.padding(innerPadding)
 								) {
-									Greeting("Add")
+									Add(navController = navController)
 								}
 							}
 							composable("settings") {
