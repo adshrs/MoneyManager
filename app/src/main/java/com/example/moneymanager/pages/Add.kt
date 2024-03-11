@@ -58,6 +58,7 @@ import com.marosseleng.compose.material3.datetimepickers.date.ui.dialog.DatePick
 @Composable
 fun Add(navController: NavController, addViewModel: AddViewModel = viewModel()) {
 	val state by addViewModel.uiState.collectAsState()
+
 	val recurrences = listOf(
 		Recurrence.None,
 		Recurrence.Daily,

@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
 				val backStackEntry by navController.currentBackStackEntryAsState()
 				var showBottomBar by rememberSaveable { mutableStateOf(true) }
 
-				showBottomBar = when (backStackEntry?.destination?.route) {
+				showBottomBar =  when (backStackEntry?.destination?.route) {
 					"menu/categories" -> false
 					else -> true
 				}
