@@ -19,25 +19,31 @@ import com.example.moneymanager.ui.theme.Typography
 
 @Composable
 fun TableRow(
-	label: String,
 	modifier: Modifier = Modifier,
+	label: String? = null,
 	hasArrow: Boolean = false,
 	isDestructive: Boolean = false,
+	detailContent: (@Composable RowScope.() -> Unit)? = null,
 	content: (@Composable RowScope.() -> Unit)? = null
 ) {
 	val textColor = if (isDestructive) Destructive else TextPrimary
 
 	Row(
-		modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, )  ,
+		modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)  ,
 		horizontalArrangement = Arrangement.SpaceBetween,
 		verticalAlignment = Alignment.CenterVertically
 	) {
-		Text(
-			text = label,
-			modifier = Modifier.padding(vertical = 10.dp),
-			style = Typography.bodyMedium,
-			color = textColor
-		)
+		if (label != null) {
+			Text(
+				text = label,
+				modifier = Modifier.padding(vertical = 10.dp),
+				style = Typography.bodyMedium,
+				color = textColor
+			)
+		}
+		if (content != null) {
+			content()
+		}
 		if (hasArrow) {
 			Icon(
 				painterResource(id = R.drawable.icon_chevron_right),
@@ -45,8 +51,8 @@ fun TableRow(
 				modifier = Modifier.padding(vertical = 10.dp)
 			)
 		}
-		if (content != null) {
-			content()
+		if (detailContent != null) {
+			detailContent()
 		}
 	}
 }

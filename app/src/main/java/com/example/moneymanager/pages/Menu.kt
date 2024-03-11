@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,17 +42,18 @@ fun Menu(navController: NavController) {
 					.background(BackgroundElevated)
 					.fillMaxWidth()
 				) {
-					TableRow("Account", hasArrow = true, modifier = Modifier.clickable{
+					TableRow(label = "Account", hasArrow = true, modifier = Modifier.clickable {
 						navController.navigate("menu/account")
 					})
-					Divider(thickness = 1.dp, color = DividerColor)
-					TableRow("Categories", hasArrow = true, modifier = Modifier.clickable{
+					HorizontalDivider(thickness = 1.dp, color = DividerColor)
+					TableRow(label = "Categories", hasArrow = true, modifier = Modifier.clickable {
 						navController.navigate("menu/categories")
 					})
-					TableRow("Settings", hasArrow = true, modifier = Modifier.clickable{
+					HorizontalDivider(thickness = 1.dp, color = DividerColor)
+					TableRow(label = "Settings", hasArrow = true, modifier = Modifier.clickable {
 						navController.navigate("menu/settings")
 					})
-					Divider(thickness = 1.dp, color = DividerColor)
+					HorizontalDivider(thickness = 1.dp, color = DividerColor)
 				}
 			}
 		}

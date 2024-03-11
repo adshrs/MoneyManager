@@ -15,10 +15,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -96,145 +96,160 @@ fun Add(navController: NavController, addViewModel: AddViewModel = viewModel()) 
 							.background(BackgroundElevated)
 							.fillMaxWidth()
 					) {
-						TableRow("Amount") {
-							UnstyledTextField(
-								value = state.amount,
-								onValueChange = addViewModel::setAmount,
-								placeholder = { Text(text = "0") },
-								modifier = Modifier.fillMaxWidth(),
-								arrangement = Arrangement.End,
-								textStyle = TextStyle(
-									textAlign = TextAlign.End
-								),
-								maxLines = 1,
-								keyboardOptions = KeyboardOptions(
-									keyboardType = KeyboardType.Number
+						TableRow(
+							label = "Amount",
+							detailContent = {
+								UnstyledTextField(
+									value = state.amount,
+									onValueChange = addViewModel::setAmount,
+									placeholder = { Text(text = "0") },
+									modifier = Modifier.fillMaxWidth(),
+									arrangement = Arrangement.End,
+									textStyle = TextStyle(
+										textAlign = TextAlign.End
+									),
+									singleLine = true,
+									keyboardOptions = KeyboardOptions(
+										keyboardType = KeyboardType.Number
+									)
 								)
-							)
-						}
-
-						Divider(thickness = 1.dp, color = DividerColor)
-
-						TableRow("Recurrence") {
-							var recurrenceMenuOpened by remember {
-								mutableStateOf(false)
 							}
+						)
 
-							TextButton(
-								onClick = { recurrenceMenuOpened = true },
-								contentPadding = PaddingValues(),
-								modifier = Modifier.widthIn(min = 1.dp),
-								shape = RoundedCornerShape(10.dp)
-							) {
-								Text(text = state.recurrence?.name ?: Recurrence.None.name)
-								DropdownMenu(
-									expanded = recurrenceMenuOpened,
-									onDismissRequest = { recurrenceMenuOpened = false },
-									modifier = Modifier
-								) {
-									recurrences.forEach { recurrence ->
-										DropdownMenuItem(
-											text = { Text(text = recurrence.name) },
-											onClick = {
-												addViewModel.setRecurrence(recurrence)
-												recurrenceMenuOpened = false
-											}
-										)
-									}
+						HorizontalDivider(thickness = 1.dp, color = DividerColor)
+
+						TableRow(
+							label = "Recurrence",
+							detailContent = {
+								var recurrenceMenuOpened by remember {
+									mutableStateOf(false)
 								}
-							}
-						}
 
-						Divider(thickness = 1.dp, color = DividerColor)
-
-						TableRow("Date") {
-							var datePickerOpened by remember {
-								mutableStateOf(false)
-							}
-
-							TextButton(
-								onClick = { datePickerOpened = true },
-								contentPadding = PaddingValues(),
-								modifier = Modifier.widthIn(min = 1.dp)
-							) {
-								Text(text = state.date.toString())
-							}
-
-							if (datePickerOpened) {
-								DatePickerDialog(
-									onDismissRequest = { datePickerOpened = false },
-									onDateChange = {
-										addViewModel.setDate(it)
-										datePickerOpened = false
-									},
-									initialDate = state.date
-								)
-							}
-
-						}
-
-						Divider(thickness = 1.dp, color = DividerColor)
-
-						TableRow("Note") {
-							UnstyledTextField(
-								value = state.note,
-								placeholder = { Text(text = "Write a note") },
-								arrangement = Arrangement.End,
-								onValueChange = addViewModel::setNote,
-								modifier = Modifier.fillMaxWidth(),
-								textStyle = TextStyle(
-									textAlign = TextAlign.End
-								),
-								keyboardOptions = KeyboardOptions(
-									keyboardType = KeyboardType.Text
-								),
-							)
-						}
-
-						Divider(thickness = 1.dp, color = DividerColor)
-
-						TableRow("Category") {
-							var categoriesMenuOpened by remember {
-								mutableStateOf(false)
-							}
-
-							TextButton(
-								onClick = { categoriesMenuOpened = true },
-								contentPadding = PaddingValues(),
-								modifier = Modifier.widthIn(min = 1.dp)
-							) {
-								//TODO: Change the color of the text based on the selected category
-								Text(text = state.category ?: "Select a category")
-								DropdownMenu(
-									expanded = categoriesMenuOpened,
-									onDismissRequest = { categoriesMenuOpened = false },
-									modifier = Modifier
+								TextButton(
+									onClick = { recurrenceMenuOpened = true },
+									contentPadding = PaddingValues(),
+									modifier = Modifier.widthIn(min = 1.dp),
+									shape = RoundedCornerShape(10.dp)
 								) {
-									categories.forEach { category ->
-										DropdownMenuItem(
-											text = {
-												Row(verticalAlignment = Alignment.CenterVertically) {
-													//TODO: Change the color based on the category
-													Surface(
-														modifier = Modifier.size(10.dp),
-														shape = CircleShape,
-														color = Primary
-													) {}
-													Text(
-														text = category,
-														modifier = Modifier.padding(start = 8.dp)
-													)
+									Text(text = state.recurrence?.name ?: Recurrence.None.name)
+									DropdownMenu(
+										expanded = recurrenceMenuOpened,
+										onDismissRequest = { recurrenceMenuOpened = false },
+										modifier = Modifier
+									) {
+										recurrences.forEach { recurrence ->
+											DropdownMenuItem(
+												text = { Text(text = recurrence.name) },
+												onClick = {
+													addViewModel.setRecurrence(recurrence)
+													recurrenceMenuOpened = false
 												}
-											},
-											onClick = {
-												addViewModel.setCategory(category)
-												categoriesMenuOpened = false
-											}
-										)
+											)
+										}
 									}
 								}
 							}
-						}
+						)
+
+						HorizontalDivider(thickness = 1.dp, color = DividerColor)
+
+						TableRow(
+							label = "Date",
+							detailContent = {
+								var datePickerOpened by remember {
+									mutableStateOf(false)
+								}
+
+								TextButton(
+									onClick = { datePickerOpened = true },
+									contentPadding = PaddingValues(),
+									modifier = Modifier.widthIn(min = 1.dp)
+								) {
+									Text(text = state.date.toString())
+								}
+
+								if (datePickerOpened) {
+									DatePickerDialog(
+										onDismissRequest = { datePickerOpened = false },
+										onDateChange = {
+											addViewModel.setDate(it)
+											datePickerOpened = false
+										},
+										initialDate = state.date
+									)
+								}
+							}
+						)
+
+						HorizontalDivider(thickness = 1.dp, color = DividerColor)
+
+						TableRow(
+							label = "Note",
+							detailContent = {
+								UnstyledTextField(
+									value = state.note,
+									placeholder = { Text(text = "Write a note") },
+									arrangement = Arrangement.End,
+									onValueChange = addViewModel::setNote,
+									modifier = Modifier.fillMaxWidth(),
+									textStyle = TextStyle(
+										textAlign = TextAlign.End
+									),
+									singleLine = true,
+									keyboardOptions = KeyboardOptions(
+										keyboardType = KeyboardType.Text
+									),
+								)
+							}
+						)
+
+						HorizontalDivider(thickness = 1.dp, color = DividerColor)
+
+						TableRow(
+							label = "Category",
+							detailContent = {
+								var categoriesMenuOpened by remember {
+									mutableStateOf(false)
+								}
+
+								TextButton(
+									onClick = { categoriesMenuOpened = true },
+									contentPadding = PaddingValues(),
+									modifier = Modifier.widthIn(min = 1.dp)
+								) {
+									//TODO: Change the color of the text based on the selected category
+									Text(text = state.category ?: "Select a category")
+									DropdownMenu(
+										expanded = categoriesMenuOpened,
+										onDismissRequest = { categoriesMenuOpened = false },
+										modifier = Modifier
+									) {
+										categories.forEach { category ->
+											DropdownMenuItem(
+												text = {
+													Row(verticalAlignment = Alignment.CenterVertically) {
+														//TODO: Change the color based on the category
+														Surface(
+															modifier = Modifier.size(10.dp),
+															shape = CircleShape,
+															color = Primary
+														) {}
+														Text(
+															text = category,
+															modifier = Modifier.padding(start = 8.dp)
+														)
+													}
+												},
+												onClick = {
+													addViewModel.setCategory(category)
+													categoriesMenuOpened = false
+												}
+											)
+										}
+									}
+								}
+							}
+						)
 					}
 				}
 

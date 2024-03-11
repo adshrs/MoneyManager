@@ -9,8 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowLeft
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MediumTopAppBar
@@ -28,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.moneymanager.components.TableRow
 import com.example.moneymanager.ui.theme.BackgroundElevated
-import com.example.moneymanager.ui.theme.DividerColor
 import com.example.moneymanager.ui.theme.TopAppBarBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,7 +56,7 @@ fun Settings(navController: NavController) {
 
 							) {
 							Icon(
-								Icons.Rounded.KeyboardArrowLeft,
+								Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
 								contentDescription = "Menu"
 							)
 							Text(text = "Menu", textAlign = TextAlign.Center)
@@ -75,9 +73,7 @@ fun Settings(navController: NavController) {
 					.background(BackgroundElevated)
 					.fillMaxWidth()
 				) {
-
-					Divider(thickness = 1.dp, color = DividerColor)
-					TableRow("Erase all Data", isDestructive = true)
+					TableRow(label = "Erase all Data", isDestructive = true)
 				}
 			}
 		}
