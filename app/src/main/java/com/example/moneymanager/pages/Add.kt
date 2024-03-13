@@ -92,7 +92,7 @@ fun Add(navController: NavController, addViewModel: AddViewModel = viewModel()) 
 				item {
 					Column(
 						modifier = Modifier
-							.padding(16.dp)
+							.padding(horizontal = 8.dp, vertical = 16.dp)
 							.clip(RoundedCornerShape(10.dp))
 							.background(BackgroundElevated)
 							.fillMaxWidth()

@@ -19,7 +19,7 @@ data class CategoriesScreenState(
 		Category("Stationary", Color.White),
 		Category("Cosmetics", Color.Green),
 		Category("Furniture", Color.Yellow),
-		Category("Electronics", Color.Cyan),
+		Category("Electronics", Color.Cyan)
 	)
 )
 

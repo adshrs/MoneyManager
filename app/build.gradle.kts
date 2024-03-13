@@ -64,6 +64,8 @@ dependencies {
 	implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 	implementation("com.github.skydoves:colorpicker-compose:1.0.7")
 	implementation ("me.saket.swipe:swipe:1.3.0")
+	implementation ("io.github.serpro69:kotlin-faker:1.13.0")
+	implementation("androidx.compose.ui:ui-text-google-fonts:1.6.3")
 	testImplementation("junit:junit:4.13.2")
 	androidTestImplementation("androidx.test.ext:junit:1.1.5")
 	androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

@@ -68,7 +68,7 @@ fun Settings(navController: NavController) {
 		content = { innerPadding ->
 			Column(modifier = Modifier.padding(innerPadding)) {
 				Column(modifier = Modifier
-					.padding(16.dp)
+					.padding(horizontal = 8.dp, vertical = 16.dp)
 					.clip(RoundedCornerShape(8.dp))
 					.background(BackgroundElevated)
 					.fillMaxWidth()

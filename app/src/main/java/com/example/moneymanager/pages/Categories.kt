@@ -61,7 +61,6 @@ import com.example.moneymanager.ui.theme.TopAppBarBackground
 import com.example.moneymanager.ui.theme.Typography
 import com.example.moneymanager.viewmodels.CategoriesViewModel
 import com.github.skydoves.colorpicker.compose.AlphaTile
-import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import me.saket.swipe.SwipeAction
@@ -122,7 +121,7 @@ fun Categories(
 					AnimatedVisibility(visible = true) {
 						LazyColumn(
 							modifier = Modifier
-								.padding(16.dp)
+								.padding(horizontal = 8.dp, vertical = 16.dp)
 								.clip(RoundedCornerShape(8.dp))
 //								.background(BackgroundElevated)
 								.fillMaxWidth()
@@ -139,7 +138,7 @@ fun Categories(
 											onSwipe = { categoriesViewModel.deleteCategory(category) }
 										)
 									),
-									swipeThreshold = 100.dp,
+									swipeThreshold = 80.dp,
 									modifier = Modifier.animateItemPlacement()
 								) {
 									TableRow(
@@ -195,7 +194,7 @@ fun Categories(
 				}
 				Row(
 					modifier = Modifier
-						.padding(horizontal = 16.dp)
+						.padding(horizontal = 8.dp)
 						.padding(bottom = 16.dp)
 						.fillMaxWidth(),
 					verticalAlignment = Alignment.CenterVertically
@@ -207,10 +206,10 @@ fun Categories(
 								shape = RoundedCornerShape(10.dp)
 							) {
 								Column(
-									modifier = Modifier
-										.padding(all = 30.dp)
+									modifier = Modifier.padding(all = 30.dp),
+									horizontalAlignment = Alignment.CenterHorizontally
 								) {
-									Text(text = "Choose a color", style = Typography.titleLarge)
+									Text(text = "Choose a color", style = Typography.titleMedium)
 									Row(
 										modifier = Modifier
 											.fillMaxWidth()
@@ -237,18 +236,10 @@ fun Categories(
 										},
 										initialColor = Primary
 									)
-									BrightnessSlider(
-										modifier = Modifier
-											.fillMaxWidth()
-											.padding(10.dp)
-											.height(35.dp),
-										controller = colorPickerController,
-									)
 									TextButton(
 										onClick = categoriesViewModel::hideColorPicker,
 										modifier = Modifier
 											.fillMaxWidth()
-											.padding(top = 24.dp)
 									) {
 										Text(text = "Done")
 									}

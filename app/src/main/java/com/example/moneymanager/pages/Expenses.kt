@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,6 +27,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.moneymanager.components.DropdownButton
+import com.example.moneymanager.components.expensesList.ExpensesList
+import com.example.moneymanager.components.expensesList.mockExpenses
 import com.example.moneymanager.models.Recurrence
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 import com.example.moneymanager.ui.theme.TextSecondary
@@ -65,7 +69,7 @@ fun Expenses(
 				modifier = Modifier
 					.fillMaxWidth()
 					.padding(innerPadding)
-					.padding(16.dp),
+					.padding(horizontal = 8.dp, vertical = 16.dp),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
 				Row(verticalAlignment = Alignment.CenterVertically) {
@@ -82,6 +86,7 @@ fun Expenses(
 						expanded = recurrenceMenuOpened,
 						onDismissRequest = { recurrenceMenuOpened = false },
 						modifier = Modifier
+
 					) {
 						recurrences.forEach { recurrence ->
 							DropdownMenuItem(
@@ -96,16 +101,17 @@ fun Expenses(
 				}
 				Row(modifier = Modifier.padding(vertical = 32.dp)) {
 					Text(
-						text = "NPR",
+						text = "Rs.",
 						style = Typography.bodyMedium,
 						color = TextSecondary,
 						modifier = Modifier.padding(end = 4.dp)
 					)
-					Text(
-						text = "2940.00",
-						style = Typography.titleLarge
-					)
+					Text(text = "${state.sumTotal}", style = Typography.titleLarge)
 				}
+				ExpensesList(
+					expenses = mockExpenses,
+					modifier = Modifier.verticalScroll(rememberScrollState())
+				)
 			}
 		}
 	)

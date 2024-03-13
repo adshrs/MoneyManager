@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class ExpensesScreenState(
-	val recurrence: Recurrence = Recurrence.Daily
+	val recurrence: Recurrence = Recurrence.Daily,
+	val sumTotal: Double = 0.0
 )
 
 class ExpensesViewModel: ViewModel() {
