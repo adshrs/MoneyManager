@@ -26,11 +26,11 @@ fun ExpensesDayGroup(date: LocalDate, dayExpenses: DayExpenses, modifier: Modifi
 			style = Typography.headlineLarge,
 			color = TextSecondary
 		)
-		HorizontalDivider(modifier = Modifier.padding(top = 10.dp, bottom = 4.dp))
+		HorizontalDivider(modifier = Modifier.padding(top = 10.dp, bottom = 6.dp))
 		dayExpenses.expenses.forEach { expense ->
 			ExpenseRow(
 				expense = expense,
-				modifier = Modifier.padding(top = 8.dp)
+				modifier = Modifier.padding(top = 6.dp)
 			)
 		}
 		HorizontalDivider(modifier = Modifier.padding(top = 12.dp, bottom = 10.dp))

@@ -69,7 +69,8 @@ fun Expenses(
 				modifier = Modifier
 					.fillMaxWidth()
 					.padding(innerPadding)
-					.padding(horizontal = 8.dp, vertical = 16.dp),
+					.padding(horizontal = 8.dp)
+					.padding(top = 16.dp),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
 				Row(verticalAlignment = Alignment.CenterVertically) {
@@ -110,7 +111,7 @@ fun Expenses(
 				}
 				ExpensesList(
 					expenses = mockExpenses,
-					modifier = Modifier.verticalScroll(rememberScrollState())
+					modifier = Modifier.padding(0.dp).verticalScroll(rememberScrollState())
 				)
 			}
 		}

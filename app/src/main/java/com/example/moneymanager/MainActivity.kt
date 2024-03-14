@@ -1,5 +1,6 @@
 package com.example.moneymanager
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,10 +8,12 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -37,6 +41,7 @@ import com.example.moneymanager.ui.theme.TopAppBarBackground
 
 
 class MainActivity : ComponentActivity() {
+	@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 	override fun onCreate(savedInstanceState: Bundle?) {
 		enableEdgeToEdge(
 			statusBarStyle = SystemBarStyle.auto(
@@ -53,78 +58,144 @@ class MainActivity : ComponentActivity() {
 				val backStackEntry by navController.currentBackStackEntryAsState()
 				var showBottomBar by rememberSaveable { mutableStateOf(true) }
 
-				showBottomBar =  when (backStackEntry?.destination?.route) {
+				showBottomBar = when (backStackEntry?.destination?.route) {
 					"menu/categories" -> false
 					else -> true
 				}
 
-				KeyboardAware  {
+				KeyboardAware {
 					Scaffold(
 						bottomBar = {
 							if (showBottomBar) {
-								NavigationBar(containerColor = TopAppBarBackground) {
+								NavigationBar(
+									containerColor = TopAppBarBackground,
+									modifier = Modifier.height(70.dp)
+								) {
 									NavigationBarItem(
-										selected = backStackEntry?.destination?.route == "home/expenses",
+										selected = backStackEntry?.destination?.route?.startsWith("home/expenses")
+											?: false,
 										onClick = { navController.navigate("home/expenses") },
 										icon = {
-											Icon(
-												painterResource(id = R.drawable.icon_navbar_home),
-												contentDescription = "Expenses"
-											)
-										}
+											if (backStackEntry?.destination?.route == "home/expenses") {
+												Icon(
+													painterResource(id = R.drawable.icon_navbar_home_selected),
+													contentDescription = "Expenses"
+												)
+											} else {
+												Icon(
+													painterResource(id = R.drawable.icon_navbar_home),
+													contentDescription = "Expenses"
+												)
+											}
+										},
+										colors = NavigationBarItemDefaults.colors(
+											indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+											selectedIconColor = androidx.compose.ui.graphics.Color.White,
+											unselectedIconColor = androidx.compose.ui.graphics.Color.White
+										)
 									)
 									NavigationBarItem(
-										selected = backStackEntry?.destination?.route == "insights",
+										selected = backStackEntry?.destination?.route?.startsWith("insights")
+											?: false,
 										onClick = { navController.navigate("insights") },
 										icon = {
-											Icon(
-												painterResource(id = R.drawable.icon_navbar_insights),
-												contentDescription = "Insights"
-											)
-										}
+											if (backStackEntry?.destination?.route == "insights") {
+												Icon(
+													painterResource(id = R.drawable.icon_navbar_insights_selected),
+													contentDescription = "Insights"
+												)
+											} else {
+												Icon(
+													painterResource(id = R.drawable.icon_navbar_insights),
+													contentDescription = "Insights"
+												)
+											}
+										},
+										colors = NavigationBarItemDefaults.colors(
+											indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+											selectedIconColor = androidx.compose.ui.graphics.Color.White,
+											unselectedIconColor = androidx.compose.ui.graphics.Color.White
+										)
 									)
 									NavigationBarItem(
-										selected = backStackEntry?.destination?.route == "add",
+										selected = backStackEntry?.destination?.route?.startsWith("add")
+											?: false,
 										onClick = { navController.navigate("add") },
 										icon = {
-											Icon(
-												painterResource(id = R.drawable.icon_navbar_add),
-												contentDescription = "Add"
-											)
-										}
+											if (backStackEntry?.destination?.route == "add") {
+												Icon(
+													painterResource(id = R.drawable.icon_navbar_add_selected),
+													contentDescription = "Add"
+												)
+											} else {
+												Icon(
+													painterResource(id = R.drawable.icon_navbar_add),
+													contentDescription = "Add"
+												)
+											}
+										},
+										colors = NavigationBarItemDefaults.colors(
+											indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+											selectedIconColor = androidx.compose.ui.graphics.Color.White,
+											unselectedIconColor = androidx.compose.ui.graphics.Color.White
+										)
 									)
 									NavigationBarItem(
 										selected = backStackEntry?.destination?.route?.startsWith("budgets&goals")
 											?: false,
 										onClick = { navController.navigate("budgets&goals") },
 										icon = {
-											Icon(
-												painterResource(id = R.drawable.icon_navbar_budgetsandgoals),
-												contentDescription = "Settings"
-											)
-										}
+											if (backStackEntry?.destination?.route == "budgets&goals") {
+												Icon(
+													painterResource(id = R.drawable.icon_navbar_budgetsandgoals_selected),
+													contentDescription = "Settings"
+												)
+											} else {
+												Icon(
+													painterResource(id = R.drawable.icon_navbar_budgetsandgoals),
+													contentDescription = "Settings"
+												)
+											}
+										},
+										colors = NavigationBarItemDefaults.colors(
+											indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+											selectedIconColor = androidx.compose.ui.graphics.Color.White,
+											unselectedIconColor = androidx.compose.ui.graphics.Color.White
+										)
 									)
 									NavigationBarItem(
 										selected = backStackEntry?.destination?.route?.startsWith("menu")
 											?: false,
 										onClick = { navController.navigate("menu") },
 										icon = {
-											Icon(
-												painterResource(id = R.drawable.icon_navbar_menu),
-												contentDescription = "Menu"
-											)
-										}
+											if (backStackEntry?.destination?.route == "menu") {
+												Icon(
+													painterResource(id = R.drawable.icon_navbar_menu_selected),
+													contentDescription = "Menu"
+												)
+											} else {
+												Icon(
+													painterResource(id = R.drawable.icon_navbar_menu),
+													contentDescription = "Menu"
+												)
+											}
+										},
+										colors = NavigationBarItemDefaults.colors(
+											indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+											selectedIconColor = androidx.compose.ui.graphics.Color.White,
+											unselectedIconColor = androidx.compose.ui.graphics.Color.White
+										)
 									)
 								}
 							}
 						},
-						content = { innerPadding ->
+						content = { _ ->
 							NavHost(navController = navController, startDestination = "home/expenses") {
 								composable("home/expenses") {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
-											.padding(innerPadding)
+											.padding(bottom = 55.dp)
 									) {
 										Expenses(navController = navController)
 									}
@@ -133,7 +204,7 @@ class MainActivity : ComponentActivity() {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
-											.padding(innerPadding)
+											.padding(bottom = 55.dp)
 									) {
 										Greeting("Incomes")
 									}
@@ -142,7 +213,7 @@ class MainActivity : ComponentActivity() {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
-											.padding(innerPadding)
+											.padding(bottom = 55.dp)
 									) {
 										Greeting("Insights")
 									}
@@ -151,7 +222,7 @@ class MainActivity : ComponentActivity() {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
-											.padding(innerPadding)
+											.padding(bottom = 55.dp)
 									) {
 										Add(navController = navController)
 									}
@@ -160,7 +231,7 @@ class MainActivity : ComponentActivity() {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
-											.padding(innerPadding)
+											.padding(bottom = 55.dp)
 									) {
 										Greeting("Budgets & Goals")
 									}
@@ -169,7 +240,7 @@ class MainActivity : ComponentActivity() {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
-											.padding(innerPadding)
+											.padding(bottom = 55.dp)
 									) {
 										Greeting("Budgets")
 									}
@@ -178,7 +249,7 @@ class MainActivity : ComponentActivity() {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
-											.padding(innerPadding)
+											.padding(bottom = 55.dp)
 									) {
 										Greeting("Goals")
 									}
@@ -187,7 +258,7 @@ class MainActivity : ComponentActivity() {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
-											.padding(innerPadding)
+											.padding(bottom = 55.dp)
 									) {
 										Menu(navController = navController)
 									}
@@ -196,7 +267,7 @@ class MainActivity : ComponentActivity() {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
-											.padding(innerPadding)
+											.padding(bottom = 55.dp)
 									) {
 										Greeting("Account")
 									}
@@ -205,7 +276,7 @@ class MainActivity : ComponentActivity() {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
-											.padding(innerPadding)
+											.padding(bottom = 0.dp)
 									) {
 										Categories(navController = navController)
 									}
@@ -214,7 +285,7 @@ class MainActivity : ComponentActivity() {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
-											.padding(innerPadding)
+											.padding(bottom = 55.dp)
 									) {
 										Settings(navController = navController)
 									}
