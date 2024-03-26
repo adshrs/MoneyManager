@@ -53,7 +53,7 @@ fun ExpenseRow(expense: Expense, modifier: Modifier = Modifier) {
 			Column(verticalArrangement = Arrangement.Center) {
 				Text(
 					text = "Rs. ${DecimalFormat("0.#").format(expense.amount)}",
-					style = Typography.bodySmall,
+					style = Typography.labelMedium,
 					color = Destructive
 				)
 			}

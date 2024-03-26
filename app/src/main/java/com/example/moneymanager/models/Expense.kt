@@ -36,4 +36,23 @@ fun List<Expense>.groupByDay(): Map<LocalDate, DayExpenses> {
 	return  dataMap.toSortedMap(compareByDescending { it })
 }
 
+fun List<Expense>.groupByDayOfWeek(): Map<String, DayExpenses> {
+	val dataMap: MutableMap<String, DayExpenses> = mutableMapOf()
+
+	this.forEach { expense ->
+		val dayOfWeek = expense.date.dayOfWeek
+
+		if (dataMap[dayOfWeek.name] == null) {
+			dataMap[dayOfWeek.name] = DayExpenses(
+				expenses = mutableListOf(),
+				total	= 0.0
+			)
+		}
+
+		dataMap[dayOfWeek.name]!!.expenses.add(expense)
+		dataMap[dayOfWeek.name]!!.total = dataMap[dayOfWeek.name]!!.total.plus(expense.amount)
+	}
+
+	return  dataMap.toSortedMap(compareByDescending { it })
+}
 

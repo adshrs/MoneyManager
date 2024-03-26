@@ -81,7 +81,7 @@ fun Expenses(
 					DropdownButton(
 						label = state.recurrence.target,
 						onClick = { recurrenceMenuOpened = !recurrenceMenuOpened },
-						modifier = Modifier.padding(start = 16.dp )
+						modifier = Modifier.padding(start = 16.dp)
 					)
 					DropdownMenu(
 						expanded = recurrenceMenuOpened,
@@ -111,7 +111,9 @@ fun Expenses(
 				}
 				ExpensesList(
 					expenses = mockExpenses,
-					modifier = Modifier.padding(0.dp).verticalScroll(rememberScrollState())
+					modifier = Modifier
+						.padding(0.dp)
+						.verticalScroll(rememberScrollState())
 				)
 			}
 		}

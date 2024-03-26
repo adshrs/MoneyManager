@@ -32,6 +32,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.moneymanager.components.KeyboardAware
 import com.example.moneymanager.pages.Add
+import com.example.moneymanager.pages.Analytics
 import com.example.moneymanager.pages.Categories
 import com.example.moneymanager.pages.Expenses
 import com.example.moneymanager.pages.Menu
@@ -95,19 +96,19 @@ class MainActivity : ComponentActivity() {
 										)
 									)
 									NavigationBarItem(
-										selected = backStackEntry?.destination?.route?.startsWith("insights")
+										selected = backStackEntry?.destination?.route?.startsWith("analytics")
 											?: false,
-										onClick = { navController.navigate("insights") },
+										onClick = { navController.navigate("analytics") },
 										icon = {
-											if (backStackEntry?.destination?.route == "insights") {
+											if (backStackEntry?.destination?.route == "analytics") {
 												Icon(
-													painterResource(id = R.drawable.icon_navbar_insights_selected),
-													contentDescription = "Insights"
+													painterResource(id = R.drawable.icon_navbar_analytics_selected),
+													contentDescription = "analytics"
 												)
 											} else {
 												Icon(
-													painterResource(id = R.drawable.icon_navbar_insights),
-													contentDescription = "Insights"
+													painterResource(id = R.drawable.icon_navbar_analytics),
+													contentDescription = "analytics"
 												)
 											}
 										},
@@ -209,13 +210,13 @@ class MainActivity : ComponentActivity() {
 										Greeting("Incomes")
 									}
 								}
-								composable("insights") {
+								composable("analytics") {
 									Surface(
 										modifier = Modifier
 											.fillMaxSize()
 											.padding(bottom = 55.dp)
 									) {
-										Greeting("Insights")
+										Analytics(navController = navController)
 									}
 								}
 								composable("add") {

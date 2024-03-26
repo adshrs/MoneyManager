@@ -23,7 +23,7 @@ import com.example.moneymanager.ui.theme.Typography
 fun DropdownButton(
 	modifier: Modifier = Modifier,
 	label: String = "",
-	onClick: () -> Unit
+	onClick: () -> Unit,
 ) {
 	Surface(
 		shape = RoundedCornerShape(6.dp),
@@ -32,10 +32,10 @@ fun DropdownButton(
 		onClick = onClick
 	) {
 		Row(
-			modifier = Modifier.padding(start = 20.dp, end = 17.dp, top = 3.dp, bottom = 3.dp),
+			modifier = Modifier.padding(start = 10.dp, end = 7.dp, top = 5.dp, bottom = 5.dp),
 			verticalAlignment = Alignment.CenterVertically
 		) {
-			Text(text = label, style = Typography.titleSmall)
+			Text(text = label, style = Typography.headlineMedium)
 			Icon(
 				painterResource(id = R.drawable.icon_unfold_more),
 				contentDescription = "Open picker",

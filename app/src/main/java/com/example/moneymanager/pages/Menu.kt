@@ -53,7 +53,6 @@ fun Menu(navController: NavController) {
 					TableRow(label = "Settings", hasArrow = true, modifier = Modifier.clickable {
 						navController.navigate("menu/settings")
 					})
-					HorizontalDivider(thickness = 1.dp, color = DividerColor)
 				}
 			}
 		}

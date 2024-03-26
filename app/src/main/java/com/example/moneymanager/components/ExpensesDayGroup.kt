@@ -41,7 +41,7 @@ fun ExpensesDayGroup(date: LocalDate, dayExpenses: DayExpenses, modifier: Modifi
 			Text(text = "Total:", style = Typography.bodyMedium, color = TextSecondary)
 			Text(
 				text = "Rs. ${DecimalFormat("0.#").format(dayExpenses.total)}",
-				style = Typography.headlineMedium,
+				style = Typography.labelMedium,
 				color = Destructive
 			)
 		}

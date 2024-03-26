@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -50,7 +52,9 @@ import com.example.moneymanager.ui.theme.BackgroundElevated
 import com.example.moneymanager.ui.theme.DividerColor
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 import com.example.moneymanager.ui.theme.Primary
+import com.example.moneymanager.ui.theme.Secondary
 import com.example.moneymanager.ui.theme.TopAppBarBackground
+import com.example.moneymanager.ui.theme.Typography
 import com.example.moneymanager.viewmodels.AddViewModel
 import com.marosseleng.compose.material3.datetimepickers.date.ui.dialog.DatePickerDialog
 
@@ -132,7 +136,11 @@ fun Add(navController: NavController, addViewModel: AddViewModel = viewModel()) 
 									modifier = Modifier.widthIn(min = 1.dp),
 									shape = RoundedCornerShape(10.dp)
 								) {
-									Text(text = state.recurrence?.name ?: Recurrence.None.name)
+									Text(
+										text = state.recurrence?.name ?: Recurrence.None.name,
+										color = Primary,
+										style = Typography.bodySmall
+									)
 									DropdownMenu(
 										expanded = recurrenceMenuOpened,
 										onDismissRequest = { recurrenceMenuOpened = false },
@@ -164,9 +172,14 @@ fun Add(navController: NavController, addViewModel: AddViewModel = viewModel()) 
 								TextButton(
 									onClick = { datePickerOpened = true },
 									contentPadding = PaddingValues(),
-									modifier = Modifier.widthIn(min = 1.dp)
+									modifier = Modifier.widthIn(min = 1.dp),
+									shape = RoundedCornerShape(10.dp)
 								) {
-									Text(text = state.date.toString())
+									Text(
+										text = state.date.toString(),
+										color = Primary,
+										style = Typography.bodySmall
+									)
 								}
 
 								if (datePickerOpened) {
@@ -216,10 +229,15 @@ fun Add(navController: NavController, addViewModel: AddViewModel = viewModel()) 
 								TextButton(
 									onClick = { categoriesMenuOpened = true },
 									contentPadding = PaddingValues(),
-									modifier = Modifier.widthIn(min = 1.dp)
+									modifier = Modifier.widthIn(min = 1.dp),
+									shape = RoundedCornerShape(10.dp)
 								) {
 									//TODO: Change the color of the text based on the selected category
-									Text(text = state.category ?: "Select a category")
+									Text(
+										text = state.category ?: "Select a category",
+										color = Primary,
+										style = Typography.bodySmall
+									)
 									DropdownMenu(
 										expanded = categoriesMenuOpened,
 										onDismissRequest = { categoriesMenuOpened = false },
@@ -260,7 +278,13 @@ fun Add(navController: NavController, addViewModel: AddViewModel = viewModel()) 
 						modifier = Modifier
 							.padding(16.dp)
 							.width(200.dp),
-						shape = RoundedCornerShape(10.dp)
+						shape = RoundedCornerShape(10.dp),
+						colors = ButtonColors(
+							containerColor = Secondary,
+							contentColor = Color.Black,
+							disabledContainerColor = Secondary,
+							disabledContentColor = Color.Black
+						)
 					) {
 						Text(text = "Add")
 					}
