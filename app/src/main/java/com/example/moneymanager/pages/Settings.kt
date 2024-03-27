@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import com.example.moneymanager.components.TableRow
 import com.example.moneymanager.ui.theme.BackgroundElevated
 import com.example.moneymanager.ui.theme.TopAppBarBackground
+import com.example.moneymanager.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +36,7 @@ fun Settings(navController: NavController) {
 	Scaffold(
 		topBar = {
 			MediumTopAppBar(
-				title = { Text(text = "Settings") },
+				title = { Text(text = "Settings", style = Typography.titleMedium) },
 				colors = TopAppBarDefaults.mediumTopAppBarColors(
 					containerColor = TopAppBarBackground
 				),

@@ -58,7 +58,7 @@ fun Expenses(
 	Scaffold(
 		topBar = {
 			MediumTopAppBar(
-				title = { Text(text = "Expenses") },
+				title = { Text(text = "Expenses", style = Typography.titleMedium) },
 				colors = TopAppBarDefaults.mediumTopAppBarColors(
 					containerColor = TopAppBarBackground
 				)

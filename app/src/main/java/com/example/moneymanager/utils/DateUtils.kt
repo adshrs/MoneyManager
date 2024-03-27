@@ -14,3 +14,13 @@ fun LocalDate.formatDay(): String {
 		else -> this.format(DateTimeFormatter.ofPattern("E, dd MMM"))
 	}
 }
+
+fun LocalDate.formatDayForRange(): String {
+	val today = LocalDate.now()
+	val yesterday = today.minusDays(1)
+
+	return when {
+		this.year != today.year -> this.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+		else -> this.format(DateTimeFormatter.ofPattern("dd MMM"))
+	}
+}

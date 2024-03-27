@@ -21,6 +21,7 @@ import com.example.moneymanager.components.TableRow
 import com.example.moneymanager.ui.theme.BackgroundElevated
 import com.example.moneymanager.ui.theme.DividerColor
 import com.example.moneymanager.ui.theme.TopAppBarBackground
+import com.example.moneymanager.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +29,7 @@ fun Menu(navController: NavController) {
 	Scaffold(
 		topBar = {
 			MediumTopAppBar(
-				title = { Text(text = "Menu") },
+				title = { Text(text = "Menu", style = Typography.titleMedium) },
 				colors = TopAppBarDefaults.mediumTopAppBarColors(
 					containerColor = TopAppBarBackground
 				)

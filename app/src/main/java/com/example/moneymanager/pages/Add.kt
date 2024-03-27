@@ -82,7 +82,7 @@ fun Add(navController: NavController, addViewModel: AddViewModel = viewModel()) 
 	Scaffold(
 		topBar = {
 			MediumTopAppBar(
-				title = { Text(text = "Add") },
+				title = { Text(text = "Add", style = Typography.titleMedium) },
 				colors = TopAppBarDefaults.mediumTopAppBarColors(
 					containerColor = TopAppBarBackground
 				)

@@ -35,11 +35,18 @@ val Typography = Typography(
 		lineHeight = 21.sp,
 		letterSpacing = 0.5.sp
 	),
+	headlineSmall = TextStyle(
+		fontFamily = Lato,
+		fontWeight = FontWeight.SemiBold,
+		fontSize = 16.sp,
+		lineHeight = 22.sp,
+		letterSpacing = 0.5.sp
+	),
 	headlineMedium = TextStyle(
 		fontFamily = Lato,
 		fontWeight = FontWeight.SemiBold,
 		fontSize = 17.sp,
-		lineHeight = 22.sp,
+		lineHeight = 21.sp,
 		letterSpacing = 0.5.sp
 	),
 	headlineLarge = TextStyle(
@@ -65,7 +72,7 @@ val Typography = Typography(
 	),
 	titleMedium = TextStyle(
 		fontFamily = Lato,
-		fontWeight = FontWeight.Normal,
+		fontWeight = FontWeight.SemiBold,
 		fontSize = 22.sp,
 		lineHeight = 28.sp,
 		letterSpacing = 0.5.sp

@@ -80,7 +80,7 @@ fun Categories(
 	Scaffold(
 		topBar = {
 			MediumTopAppBar(
-				title = { Text(text = "Categories") },
+				title = { Text(text = "Categories", style = Typography.titleMedium) },
 				colors = TopAppBarDefaults.mediumTopAppBarColors(
 					containerColor = TopAppBarBackground
 				),
