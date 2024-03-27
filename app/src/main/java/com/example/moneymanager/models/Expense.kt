@@ -56,3 +56,44 @@ fun List<Expense>.groupByDayOfWeek(): Map<String, DayExpenses> {
 	return  dataMap.toSortedMap(compareByDescending { it })
 }
 
+fun List<Expense>.groupByDayOfMonth(): Map<Int, DayExpenses> {
+	val dataMap: MutableMap<Int, DayExpenses> = mutableMapOf()
+
+	this.forEach { expense ->
+		val dayOfMonth = expense.date.dayOfMonth
+
+		if (dataMap[dayOfMonth] == null) {
+			dataMap[dayOfMonth] = DayExpenses(
+				expenses = mutableListOf(),
+				total	= 0.0
+			)
+		}
+
+		dataMap[dayOfMonth]!!.expenses.add(expense)
+		dataMap[dayOfMonth]!!.total = dataMap[dayOfMonth]!!.total.plus(expense.amount)
+	}
+
+	return  dataMap.toSortedMap(compareByDescending { it })
+}
+
+fun List<Expense>.groupByMonth(): Map<String, DayExpenses> {
+	val dataMap: MutableMap<String, DayExpenses> = mutableMapOf()
+
+	this.forEach { expense ->
+		val month = expense.date.month
+
+		if (dataMap[month.name] == null) {
+			dataMap[month.name] = DayExpenses(
+				expenses = mutableListOf(),
+				total	= 0.0
+			)
+		}
+
+		dataMap[month.name]!!.expenses.add(expense)
+		dataMap[month.name]!!.total = dataMap[month.name]!!.total.plus(expense.amount)
+	}
+
+	return  dataMap.toSortedMap(compareByDescending { it })
+}
+
+

@@ -4,14 +4,22 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import com.example.moneymanager.models.Recurrence
 import com.example.moneymanager.ui.theme.Primary
 import com.example.moneymanager.ui.theme.SystemGray04
 import com.github.tehras.charts.bar.BarChartData
 import com.github.tehras.charts.bar.renderer.bar.BarDrawer
 
-class BarDrawer: BarDrawer {
+class BarDrawer(val recurrence: Recurrence): BarDrawer {
 	private val barPaint = Paint().apply {
 		this.isAntiAlias = true
+	}
+
+	private val rightOffset = when(recurrence) {
+		Recurrence.Weekly -> 35f
+		Recurrence.Monthly -> 4f
+		Recurrence.Yearly -> 15f
+		else -> 0f
 	}
 
 	override fun drawBar(
@@ -23,7 +31,7 @@ class BarDrawer: BarDrawer {
 		canvas.drawRoundRect(
 			barArea.left,
 			0f,
-			barArea.right + 35f,
+			barArea.right + rightOffset,
 			barArea.bottom,
 			6f,
 			6f,
@@ -34,7 +42,7 @@ class BarDrawer: BarDrawer {
 		canvas.drawRoundRect(
 			barArea.left,
 			barArea.top,
-			barArea.right + 35f,
+			barArea.right + rightOffset,
 			barArea.bottom,
 			6f,
 			6f,

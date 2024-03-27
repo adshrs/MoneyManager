@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moneymanager.models.Expense
+import com.example.moneymanager.models.Recurrence
 import com.example.moneymanager.models.groupByDayOfWeek
 import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.utils.simplifyNumber
@@ -61,16 +62,16 @@ fun WeeklyChart(expenses: List<Expense>) {
 				),
 			)
 		),
-		labelDrawer = LabelDrawer(),
+		labelDrawer = LabelDrawer(recurrence = Recurrence.Weekly),
 		yAxisDrawer = SimpleYAxisDrawer(
 			labelTextColor = TextSecondary,
 			labelValueFormatter = ::simplifyNumber,
-			labelTextSize = 14.sp
+			labelTextSize = 12.sp
 		),
-		barDrawer = BarDrawer(),
+		barDrawer = BarDrawer(recurrence = Recurrence.Weekly),
 		modifier = Modifier
 			.fillMaxSize()
 			.padding(top = 25.dp, bottom = 45.dp)
-			.padding(horizontal = 8.dp)
+			.padding(horizontal = 10.dp)
 	)
 }
