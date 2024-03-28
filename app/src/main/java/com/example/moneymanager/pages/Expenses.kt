@@ -28,13 +28,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.moneymanager.components.DropdownButton
 import com.example.moneymanager.components.expensesList.ExpensesList
-import com.example.moneymanager.components.expensesList.mockExpenses
 import com.example.moneymanager.models.Recurrence
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.ui.theme.TopAppBarBackground
 import com.example.moneymanager.ui.theme.Typography
 import com.example.moneymanager.viewmodels.ExpensesViewModel
+import java.text.DecimalFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +42,7 @@ fun Expenses(
 	navController: NavController,
 	expensesViewModel: ExpensesViewModel = viewModel()
 ) {
-	val state by expensesViewModel.uiState.collectAsState()
+	val uiState by expensesViewModel.uiState.collectAsState()
 
 	val recurrences = listOf(
 		Recurrence.Daily,
@@ -79,7 +79,7 @@ fun Expenses(
 						style = Typography.bodyMedium
 					)
 					DropdownButton(
-						label = state.recurrence.target,
+						label = uiState.recurrence.target,
 						onClick = { recurrenceMenuOpened = !recurrenceMenuOpened },
 						modifier = Modifier.padding(start = 16.dp)
 					)
@@ -107,10 +107,10 @@ fun Expenses(
 						color = TextSecondary,
 						modifier = Modifier.padding(end = 4.dp)
 					)
-					Text(text = "${state.sumTotal}", style = Typography.titleLarge)
+					Text(text = DecimalFormat("0.#").format(uiState.sumTotal), style = Typography.titleLarge)
 				}
 				ExpensesList(
-					expenses = mockExpenses,
+					expenses = uiState.expenses,
 					modifier = Modifier
 						.padding(0.dp)
 						.verticalScroll(rememberScrollState())
