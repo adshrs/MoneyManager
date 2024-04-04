@@ -2,6 +2,7 @@ package com.example.moneymanager.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ fun DropdownButton(
 	modifier: Modifier = Modifier,
 	label: String = "",
 	onClick: () -> Unit,
+	content: (@Composable RowScope.() -> Unit)? = null
 ) {
 	Surface(
 		shape = RoundedCornerShape(6.dp),
@@ -42,6 +44,13 @@ fun DropdownButton(
 				modifier = Modifier.padding(start = 6.dp),
 				tint = TextSecondary
 			)
+		}
+	}
+	Row(
+		modifier = Modifier.padding(top = 30.dp)
+	) {
+		if (content != null) {
+			content()
 		}
 	}
 }

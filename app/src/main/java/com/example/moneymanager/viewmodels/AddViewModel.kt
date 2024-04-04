@@ -12,7 +12,7 @@ data class AddScreenState(
 	val amount: String = "",
 	val recurrence: Recurrence? = null,
 	val date: LocalDate = LocalDate.now(),
-	val note: String = "",
+	val Description: String = "",
 	val category: String? = null // TODO: Replace when you build the Category model
 )
 
@@ -47,7 +47,7 @@ class AddViewModel : ViewModel() {
 	fun setNote(note: String) {
 		_uiState.update {
 			it.copy(
-				note = note
+				Description = note
 			)
 		}
 	}

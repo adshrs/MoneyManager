@@ -37,6 +37,8 @@ import com.example.moneymanager.pages.Categories
 import com.example.moneymanager.pages.Expenses
 import com.example.moneymanager.pages.Menu
 import com.example.moneymanager.pages.Settings
+import com.example.moneymanager.pages.SignIn
+import com.example.moneymanager.pages.SignUp
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 import com.example.moneymanager.ui.theme.TopAppBarBackground
 
@@ -61,6 +63,8 @@ class MainActivity : ComponentActivity() {
 
 				showBottomBar = when (backStackEntry?.destination?.route) {
 					"menu/categories" -> false
+					"signin" -> false
+					"signup" -> false
 					else -> true
 				}
 
@@ -191,7 +195,23 @@ class MainActivity : ComponentActivity() {
 							}
 						},
 						content = { _ ->
-							NavHost(navController = navController, startDestination = "home/expenses") {
+							NavHost(navController = navController, startDestination = "signin") {
+								composable("signin") {
+									Surface(
+										modifier = Modifier
+											.fillMaxSize()
+									) {
+										SignIn(navController = navController)
+									}
+								}
+								composable("signup") {
+									Surface(
+										modifier = Modifier
+											.fillMaxSize()
+									) {
+										SignUp(navController = navController)
+									}
+								}
 								composable("home/expenses") {
 									Surface(
 										modifier = Modifier

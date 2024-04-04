@@ -65,8 +65,8 @@ val Typography = Typography(
 	),
 	titleLarge = TextStyle(
 		fontFamily = Lato,
-		fontWeight = FontWeight.Normal,
-		fontSize = 28.sp,
+		fontWeight = FontWeight.SemiBold,
+		fontSize = 30.sp,
 		lineHeight = 34.sp,
 		letterSpacing = 0.5.sp
 	),

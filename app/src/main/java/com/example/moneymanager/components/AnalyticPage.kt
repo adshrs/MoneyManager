@@ -25,11 +25,11 @@ import com.example.moneymanager.components.expensesList.ExpensesList
 import com.example.moneymanager.models.Recurrence
 import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.ui.theme.Typography
+import com.example.moneymanager.utils.calculateDateRange
 import com.example.moneymanager.utils.formatDayForRange
 import com.example.moneymanager.viewmodels.AnalyticPageViewModel
 import com.example.moneymanager.viewmodels.viewModelFactory
 import java.text.DecimalFormat
-import java.time.LocalDate
 
 @Composable
 fun AnalyticPage(
@@ -99,7 +99,11 @@ fun AnalyticPage(
 		) {
 			when (recurrence) {
 				Recurrence.Weekly -> WeeklyChart(expenses = uiState.expenses)
-				Recurrence.Monthly -> MonthlyChart(expenses = uiState.expenses, date = LocalDate.now())
+				Recurrence.Monthly ->
+					MonthlyChart(
+						expenses = uiState.expenses,
+						numberOfDays = calculateDateRange(Recurrence.Monthly, page).daysInRange
+					)
 				Recurrence.Yearly -> YearlyChart(expenses = uiState.expenses)
 				else -> Unit
 			}

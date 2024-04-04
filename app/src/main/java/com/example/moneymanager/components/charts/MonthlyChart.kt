@@ -15,13 +15,10 @@ import com.example.moneymanager.utils.simplifyNumber
 import com.github.tehras.charts.bar.BarChart
 import com.github.tehras.charts.bar.BarChartData
 import com.github.tehras.charts.bar.renderer.yaxis.SimpleYAxisDrawer
-import java.time.LocalDate
-import java.time.YearMonth
 
 @Composable
-fun MonthlyChart(expenses: List<Expense>, date: LocalDate) {
+fun MonthlyChart(expenses: List<Expense>, numberOfDays: Int) {
 	val groupedExpenses = expenses.groupByDayOfMonth()
-	val numberOfDays = YearMonth.of(date.year, date.month).lengthOfMonth()
 
 	BarChart(
 		barChartData = BarChartData(

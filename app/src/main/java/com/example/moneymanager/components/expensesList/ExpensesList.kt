@@ -26,10 +26,10 @@ fun ExpensesList(expenses: List<Expense>, modifier: Modifier = Modifier) {
 			Box(
 				modifier = Modifier
 					.fillMaxWidth()
-					.height(285.dp),
+					.height(333.dp),
 				contentAlignment = Alignment.TopCenter
 				) {
-				Text(text = "No data for this date range.", modifier.padding(top = 100.dp))
+				Text(text = "No data for this date range.", modifier.padding(top = 130.dp))
 			}
 		} else {
 			groupedExpenses.keys.forEach { date ->
