@@ -23,6 +23,8 @@ import com.example.moneymanager.components.charts.WeeklyChart
 import com.example.moneymanager.components.charts.YearlyChart
 import com.example.moneymanager.components.expensesList.ExpensesList
 import com.example.moneymanager.models.Recurrence
+import com.example.moneymanager.models.category.CategoryResponse
+import com.example.moneymanager.models.expense.ExpenseResponse
 import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.ui.theme.Typography
 import com.example.moneymanager.utils.calculateDateRange
@@ -36,13 +38,16 @@ fun AnalyticPage(
 	innerPadding: PaddingValues,
 	page: Int,
 	recurrence: Recurrence,
+	expenses: List<ExpenseResponse>,
+	categories: List<CategoryResponse>,
 	analyticPageViewModel: AnalyticPageViewModel = viewModel(
 		key = "$page-${recurrence.name} ",
 		factory = viewModelFactory {
-			AnalyticPageViewModel(page, recurrence)
+			AnalyticPageViewModel(page, recurrence, expenses, categories)
 		}
 	)
 ) {
+
 	val uiState by analyticPageViewModel.uiState.collectAsState()
 
 	Column(
@@ -98,19 +103,20 @@ fun AnalyticPage(
 				.height(223.dp)
 		) {
 			when (recurrence) {
-				Recurrence.Weekly -> WeeklyChart(expenses = uiState.expenses)
+				Recurrence.Weekly -> WeeklyChart(expens = uiState.filteredExpenses)
 				Recurrence.Monthly ->
 					MonthlyChart(
-						expenses = uiState.expenses,
+						expens = uiState.filteredExpenses,
 						numberOfDays = calculateDateRange(Recurrence.Monthly, page).daysInRange
 					)
-				Recurrence.Yearly -> YearlyChart(expenses = uiState.expenses)
+				Recurrence.Yearly -> YearlyChart(expens = uiState.filteredExpenses)
 				else -> Unit
 			}
 		}
 
 		ExpensesList(
-			expenses = uiState.expenses,
+			expenses = uiState.filteredExpenses,
+			categories = uiState.categories,
 			modifier = Modifier
 				.padding(0.dp)
 				.verticalScroll(rememberScrollState())

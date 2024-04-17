@@ -13,12 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.moneymanager.components.ExpensesDayGroup
-import com.example.moneymanager.models.Expense
-import com.example.moneymanager.models.groupByDay
+import com.example.moneymanager.models.category.CategoryResponse
+import com.example.moneymanager.models.expense.ExpenseResponse
+import com.example.moneymanager.models.expense.groupByDay
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
-fun ExpensesList(expenses: List<Expense>, modifier: Modifier = Modifier) {
+fun ExpensesList(expenses: List<ExpenseResponse>, categories: List<CategoryResponse>, modifier: Modifier = Modifier) {
 	val groupedExpenses = expenses.groupByDay()
 
 	Column(modifier = modifier) {
@@ -37,6 +38,7 @@ fun ExpensesList(expenses: List<Expense>, modifier: Modifier = Modifier) {
 					ExpensesDayGroup(
 						date = date,
 						dayExpenses = groupedExpenses[date]!!,
+						categories = categories,
 						modifier = Modifier.padding(bottom = 28.dp)
 					)
 				}
@@ -49,6 +51,6 @@ fun ExpensesList(expenses: List<Expense>, modifier: Modifier = Modifier) {
 @Composable
 fun ExpensesListPreview() {
 	MoneyManagerTheme {
-		ExpensesList(expenses = mockExpenses)
+		ExpensesList(expenses = mockExpenses, categories = listOf())
 	}
 }

@@ -1,26 +1,27 @@
-package com.example.moneymanager.models
+package com.example.moneymanager.models.expense
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-data class Expense(
-	val id: Int,
-	val amount: Double,
-	val date: LocalDate,
-	val recurrence: Recurrence,
-	val note: String,
-	val category: Category
+data class ExpenseResponse(
+	val id: String,
+	var amount: Double,
+	var date: String,
+	var description: String,
+	var categoryId: String,
+	val userId: String
 )
 
 data class DayExpenses(
-	val expenses: MutableList<Expense>,
+	val expenses: MutableList<ExpenseResponse>,
 	var total: Double
 )
 
-fun List<Expense>.groupByDay(): Map<LocalDate, DayExpenses> {
+fun List<ExpenseResponse>.groupByDay(): Map<LocalDate, DayExpenses> {
 	val dataMap: MutableMap<LocalDate, DayExpenses> = mutableMapOf()
 
 	this.forEach { expense ->
-		val date = expense.date
+		val date = LocalDate.parse(expense.date, DateTimeFormatter.ISO_DATE)
 
 		if (dataMap[date] == null) {
 			dataMap[date] = DayExpenses(
@@ -36,11 +37,12 @@ fun List<Expense>.groupByDay(): Map<LocalDate, DayExpenses> {
 	return  dataMap.toSortedMap(compareByDescending { it })
 }
 
-fun List<Expense>.groupByDayOfWeek(): Map<String, DayExpenses> {
+fun List<ExpenseResponse>.groupByDayOfWeek(): Map<String, DayExpenses> {
 	val dataMap: MutableMap<String, DayExpenses> = mutableMapOf()
 
 	this.forEach { expense ->
-		val dayOfWeek = expense.date.dayOfWeek
+		val date = LocalDate.parse(expense.date, DateTimeFormatter.ISO_DATE)
+		val dayOfWeek = date.dayOfWeek
 
 		if (dataMap[dayOfWeek.name] == null) {
 			dataMap[dayOfWeek.name] = DayExpenses(
@@ -56,11 +58,12 @@ fun List<Expense>.groupByDayOfWeek(): Map<String, DayExpenses> {
 	return  dataMap.toSortedMap(compareByDescending { it })
 }
 
-fun List<Expense>.groupByDayOfMonth(): Map<Int, DayExpenses> {
+fun List<ExpenseResponse>.groupByDayOfMonth(): Map<Int, DayExpenses> {
 	val dataMap: MutableMap<Int, DayExpenses> = mutableMapOf()
 
 	this.forEach { expense ->
-		val dayOfMonth = expense.date.dayOfMonth
+		val date = LocalDate.parse(expense.date, DateTimeFormatter.ISO_DATE)
+		val dayOfMonth = date.dayOfMonth
 
 		if (dataMap[dayOfMonth] == null) {
 			dataMap[dayOfMonth] = DayExpenses(
@@ -76,11 +79,12 @@ fun List<Expense>.groupByDayOfMonth(): Map<Int, DayExpenses> {
 	return  dataMap.toSortedMap(compareByDescending { it })
 }
 
-fun List<Expense>.groupByMonth(): Map<String, DayExpenses> {
+fun List<ExpenseResponse>.groupByMonth(): Map<String, DayExpenses> {
 	val dataMap: MutableMap<String, DayExpenses> = mutableMapOf()
 
 	this.forEach { expense ->
-		val month = expense.date.month
+		val date = LocalDate.parse(expense.date, DateTimeFormatter.ISO_DATE)
+		val month = date.month
 
 		if (dataMap[month.name] == null) {
 			dataMap[month.name] = DayExpenses(

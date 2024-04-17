@@ -7,6 +7,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,12 +28,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.moneymanager.components.KeyboardAware
 import com.example.moneymanager.pages.Add
+import com.example.moneymanager.pages.AddCategory
 import com.example.moneymanager.pages.Analytics
 import com.example.moneymanager.pages.Categories
 import com.example.moneymanager.pages.Expenses
@@ -41,8 +45,9 @@ import com.example.moneymanager.pages.SignIn
 import com.example.moneymanager.pages.SignUp
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 import com.example.moneymanager.ui.theme.TopAppBarBackground
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 	@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,261 +68,286 @@ class MainActivity : ComponentActivity() {
 
 				showBottomBar = when (backStackEntry?.destination?.route) {
 					"menu/categories" -> false
+					"menu/categories/addcategory" -> false
 					"signin" -> false
 					"signup" -> false
 					else -> true
 				}
 
-				KeyboardAware {
-					Scaffold(
-						bottomBar = {
-							if (showBottomBar) {
-								NavigationBar(
-									containerColor = TopAppBarBackground,
-									modifier = Modifier.height(70.dp)
-								) {
-									NavigationBarItem(
-										selected = backStackEntry?.destination?.route?.startsWith("home/expenses")
-											?: false,
-										onClick = { navController.navigate("home/expenses") },
-										icon = {
-											if (backStackEntry?.destination?.route == "home/expenses") {
-												Icon(
-													painterResource(id = R.drawable.icon_navbar_home_selected),
-													contentDescription = "Expenses"
-												)
-											} else {
-												Icon(
-													painterResource(id = R.drawable.icon_navbar_home),
-													contentDescription = "Expenses"
-												)
-											}
-										},
-										colors = NavigationBarItemDefaults.colors(
-											indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-											selectedIconColor = androidx.compose.ui.graphics.Color.White,
-											unselectedIconColor = androidx.compose.ui.graphics.Color.White
-										)
-									)
-									NavigationBarItem(
-										selected = backStackEntry?.destination?.route?.startsWith("analytics")
-											?: false,
-										onClick = { navController.navigate("analytics") },
-										icon = {
-											if (backStackEntry?.destination?.route == "analytics") {
-												Icon(
-													painterResource(id = R.drawable.icon_navbar_analytics_selected),
-													contentDescription = "analytics"
-												)
-											} else {
-												Icon(
-													painterResource(id = R.drawable.icon_navbar_analytics),
-													contentDescription = "analytics"
-												)
-											}
-										},
-										colors = NavigationBarItemDefaults.colors(
-											indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-											selectedIconColor = androidx.compose.ui.graphics.Color.White,
-											unselectedIconColor = androidx.compose.ui.graphics.Color.White
-										)
-									)
-									NavigationBarItem(
-										selected = backStackEntry?.destination?.route?.startsWith("add")
-											?: false,
-										onClick = { navController.navigate("add") },
-										icon = {
-											if (backStackEntry?.destination?.route == "add") {
-												Icon(
-													painterResource(id = R.drawable.icon_navbar_add_selected),
-													contentDescription = "Add"
-												)
-											} else {
-												Icon(
-													painterResource(id = R.drawable.icon_navbar_add),
-													contentDescription = "Add"
-												)
-											}
-										},
-										colors = NavigationBarItemDefaults.colors(
-											indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-											selectedIconColor = androidx.compose.ui.graphics.Color.White,
-											unselectedIconColor = androidx.compose.ui.graphics.Color.White
-										)
-									)
-									NavigationBarItem(
-										selected = backStackEntry?.destination?.route?.startsWith("budgets&goals")
-											?: false,
-										onClick = { navController.navigate("budgets&goals") },
-										icon = {
-											if (backStackEntry?.destination?.route == "budgets&goals") {
-												Icon(
-													painterResource(id = R.drawable.icon_navbar_budgetsandgoals_selected),
-													contentDescription = "Settings"
-												)
-											} else {
-												Icon(
-													painterResource(id = R.drawable.icon_navbar_budgetsandgoals),
-													contentDescription = "Settings"
-												)
-											}
-										},
-										colors = NavigationBarItemDefaults.colors(
-											indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-											selectedIconColor = androidx.compose.ui.graphics.Color.White,
-											unselectedIconColor = androidx.compose.ui.graphics.Color.White
-										)
-									)
-									NavigationBarItem(
-										selected = backStackEntry?.destination?.route?.startsWith("menu")
-											?: false,
-										onClick = { navController.navigate("menu") },
-										icon = {
-											if (backStackEntry?.destination?.route == "menu") {
-												Icon(
-													painterResource(id = R.drawable.icon_navbar_menu_selected),
-													contentDescription = "Menu"
-												)
-											} else {
-												Icon(
-													painterResource(id = R.drawable.icon_navbar_menu),
-													contentDescription = "Menu"
-												)
-											}
-										},
-										colors = NavigationBarItemDefaults.colors(
-											indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-											selectedIconColor = androidx.compose.ui.graphics.Color.White,
-											unselectedIconColor = androidx.compose.ui.graphics.Color.White
-										)
-									)
-								}
-							}
-						},
-						content = { _ ->
-							NavHost(navController = navController, startDestination = "signin") {
-								composable("signin") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-									) {
-										SignIn(navController = navController)
-									}
-								}
-								composable("signup") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-									) {
-										SignUp(navController = navController)
-									}
-								}
-								composable("home/expenses") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-											.padding(bottom = 55.dp)
-									) {
-										Expenses(navController = navController)
-									}
-								}
-								composable("home/incomes") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-											.padding(bottom = 55.dp)
-									) {
-										Greeting("Incomes")
-									}
-								}
-								composable("analytics") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-											.padding(bottom = 55.dp)
-									) {
-										Analytics(navController = navController)
-									}
-								}
-								composable("add") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-											.padding(bottom = 55.dp)
-									) {
-										Add(navController = navController)
-									}
-								}
-								composable("budgets&goals") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-											.padding(bottom = 55.dp)
-									) {
-										Greeting("Budgets & Goals")
-									}
-								}
-								composable("budgets&goals/budgets") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-											.padding(bottom = 55.dp)
-									) {
-										Greeting("Budgets")
-									}
-								}
-								composable("budgets&goals/goals") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-											.padding(bottom = 55.dp)
-									) {
-										Greeting("Goals")
-									}
-								}
-								composable("menu") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-											.padding(bottom = 55.dp)
-									) {
-										Menu(navController = navController)
-									}
-								}
-								composable("menu/account") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-											.padding(bottom = 55.dp)
-									) {
-										Greeting("Account")
-									}
-								}
-								composable("menu/categories") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-											.padding(bottom = 0.dp)
-									) {
-										Categories(navController = navController)
-									}
-								}
-								composable("menu/settings") {
-									Surface(
-										modifier = Modifier
-											.fillMaxSize()
-											.padding(bottom = 55.dp)
-									) {
-										Settings(navController = navController)
-									}
-								}
-							}
-						}
-					)
-				}
+				MoneyManager(showBottomBar, backStackEntry, navController)
 			}
 		}
 	}
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+private fun MoneyManager(
+	showBottomBar: Boolean,
+	backStackEntry: NavBackStackEntry?,
+	navController: NavHostController
+) {
+	Scaffold(
+		bottomBar = {
+			if (showBottomBar) {
+				NavigationBar(
+					containerColor = TopAppBarBackground,
+					modifier = Modifier.height(70.dp)
+				) {
+					NavigationBarItem(
+						selected = backStackEntry?.destination?.route?.startsWith("home/expenses")
+							?: false,
+						onClick = { navController.navigate("home/expenses") },
+						icon = {
+							if (backStackEntry?.destination?.route == "home/expenses") {
+								Icon(
+									painterResource(id = R.drawable.icon_navbar_home_selected),
+									contentDescription = "Expenses"
+								)
+							} else {
+								Icon(
+									painterResource(id = R.drawable.icon_navbar_home),
+									contentDescription = "Expenses"
+								)
+							}
+						},
+						colors = NavigationBarItemDefaults.colors(
+							indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+							selectedIconColor = androidx.compose.ui.graphics.Color.White,
+							unselectedIconColor = androidx.compose.ui.graphics.Color.White
+						)
+					)
+					NavigationBarItem(
+						selected = backStackEntry?.destination?.route?.startsWith("analytics")
+							?: false,
+						onClick = { navController.navigate("analytics") },
+						icon = {
+							if (backStackEntry?.destination?.route == "analytics") {
+								Icon(
+									painterResource(id = R.drawable.icon_navbar_analytics_selected),
+									contentDescription = "analytics"
+								)
+							} else {
+								Icon(
+									painterResource(id = R.drawable.icon_navbar_analytics),
+									contentDescription = "analytics"
+								)
+							}
+						},
+						colors = NavigationBarItemDefaults.colors(
+							indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+							selectedIconColor = androidx.compose.ui.graphics.Color.White,
+							unselectedIconColor = androidx.compose.ui.graphics.Color.White
+						)
+					)
+					NavigationBarItem(
+						selected = backStackEntry?.destination?.route?.startsWith("add")
+							?: false,
+						onClick = { navController.navigate("add") },
+						icon = {
+							if (backStackEntry?.destination?.route == "add") {
+								Icon(
+									painterResource(id = R.drawable.icon_navbar_add_selected),
+									contentDescription = "Add"
+								)
+							} else {
+								Icon(
+									painterResource(id = R.drawable.icon_navbar_add),
+									contentDescription = "Add"
+								)
+							}
+						},
+						colors = NavigationBarItemDefaults.colors(
+							indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+							selectedIconColor = androidx.compose.ui.graphics.Color.White,
+							unselectedIconColor = androidx.compose.ui.graphics.Color.White
+						)
+					)
+					NavigationBarItem(
+						selected = backStackEntry?.destination?.route?.startsWith("budgets&goals")
+							?: false,
+						onClick = { navController.navigate("budgets&goals") },
+						icon = {
+							if (backStackEntry?.destination?.route == "budgets&goals") {
+								Icon(
+									painterResource(id = R.drawable.icon_navbar_budgetsandgoals_selected),
+									contentDescription = "Settings"
+								)
+							} else {
+								Icon(
+									painterResource(id = R.drawable.icon_navbar_budgetsandgoals),
+									contentDescription = "Settings"
+								)
+							}
+						},
+						colors = NavigationBarItemDefaults.colors(
+							indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+							selectedIconColor = androidx.compose.ui.graphics.Color.White,
+							unselectedIconColor = androidx.compose.ui.graphics.Color.White
+						)
+					)
+					NavigationBarItem(
+						selected = backStackEntry?.destination?.route?.startsWith("menu")
+							?: false,
+						onClick = { navController.navigate("menu") },
+						icon = {
+							if (backStackEntry?.destination?.route == "menu") {
+								Icon(
+									painterResource(id = R.drawable.icon_navbar_menu_selected),
+									contentDescription = "Menu"
+								)
+							} else {
+								Icon(
+									painterResource(id = R.drawable.icon_navbar_menu),
+									contentDescription = "Menu"
+								)
+							}
+						},
+						colors = NavigationBarItemDefaults.colors(
+							indicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+							selectedIconColor = androidx.compose.ui.graphics.Color.White,
+							unselectedIconColor = androidx.compose.ui.graphics.Color.White
+						)
+					)
+				}
+			}
+		},
+		content = {
+			NavHost(
+				navController = navController,
+				startDestination = "signin",
+				enterTransition = { EnterTransition.None },
+				exitTransition = { ExitTransition.None },
+				popEnterTransition = { EnterTransition.None },
+				popExitTransition = { ExitTransition.None }
+			) {
+				composable("signin") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+					) {
+						SignIn(navController = navController)
+					}
+				}
+				composable("signup") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+					) {
+						SignUp(navController = navController)
+					}
+				}
+				composable("home/expenses") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 55.dp)
+					) {
+						Expenses(navController = navController)
+					}
+				}
+				composable("home/incomes") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 55.dp)
+					) {
+						Greeting("Incomes")
+					}
+				}
+				composable("analytics") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 55.dp)
+					) {
+						Analytics(navController = navController)
+					}
+				}
+				composable("add") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 55.dp)
+					) {
+						Add(navController = navController)
+					}
+				}
+				composable("budgets&goals") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 55.dp)
+					) {
+						Greeting("Budgets & Goals")
+					}
+				}
+				composable("budgets&goals/budgets") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 55.dp)
+					) {
+						Greeting("Budgets")
+					}
+				}
+				composable("budgets&goals/goals") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 55.dp)
+					) {
+						Greeting("Goals")
+					}
+				}
+				composable("menu") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 55.dp)
+					) {
+						Menu(navController = navController)
+					}
+				}
+				composable("menu/account") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 55.dp)
+					) {
+						Greeting("Account")
+					}
+				}
+				composable("menu/categories") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 0.dp)
+					) {
+						Categories(navController = navController)
+					}
+				}
+				composable("menu/categories/addcategory") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 0.dp)
+					) {
+						AddCategory(navController = navController)
+					}
+				}
+				composable("menu/settings") {
+					Surface(
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(bottom = 55.dp)
+					) {
+						Settings(navController = navController)
+					}
+				}
+			}
+		}
+	)
 }
 
 @Composable

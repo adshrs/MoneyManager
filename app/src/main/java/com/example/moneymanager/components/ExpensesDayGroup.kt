@@ -10,8 +10,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.moneymanager.models.DayExpenses
+import com.example.moneymanager.models.category.CategoryResponse
+import com.example.moneymanager.models.expense.DayExpenses
 import com.example.moneymanager.ui.theme.Destructive
+import com.example.moneymanager.ui.theme.Primary
 import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.ui.theme.Typography
 import com.example.moneymanager.utils.formatDay
@@ -19,7 +21,11 @@ import java.text.DecimalFormat
 import java.time.LocalDate
 
 @Composable
-fun ExpensesDayGroup(date: LocalDate, dayExpenses: DayExpenses, modifier: Modifier = Modifier) {
+fun ExpensesDayGroup(
+	date: LocalDate,
+	dayExpenses: DayExpenses,
+	categories: List<CategoryResponse>,
+	modifier: Modifier = Modifier) {
 	Column(modifier = modifier) {
 		Text(
 			text = date.formatDay(),
@@ -28,10 +34,26 @@ fun ExpensesDayGroup(date: LocalDate, dayExpenses: DayExpenses, modifier: Modifi
 		)
 		HorizontalDivider(modifier = Modifier.padding(top = 10.dp, bottom = 6.dp))
 		dayExpenses.expenses.forEach { expense ->
-			ExpenseRow(
-				expense = expense,
-				modifier = Modifier.padding(top = 6.dp)
-			)
+			val categoryResponse = categories.find { it.id == expense.categoryId }
+			if (categoryResponse != null) {
+				ExpenseRow(
+					expenseResponse = expense,
+					categoryResponse = categoryResponse,
+					modifier = Modifier.padding(top = 6.dp)
+				)
+			}
+			else {
+				ExpenseRow(
+					expenseResponse = expense,
+					categoryResponse = CategoryResponse(
+						id = "",
+						name = "Expense",
+						color = Primary.toString(),
+						userId = ""
+					),
+					modifier = Modifier.padding(top = 6.dp)
+				)
+			}
 		}
 		HorizontalDivider(modifier = Modifier.padding(top = 12.dp, bottom = 10.dp))
 		Row(

@@ -6,11 +6,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
@@ -24,15 +26,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.moneymanager.components.TableRow
 import com.example.moneymanager.ui.theme.BackgroundElevated
+import com.example.moneymanager.ui.theme.DividerColor
 import com.example.moneymanager.ui.theme.TopAppBarBackground
 import com.example.moneymanager.ui.theme.Typography
+import com.example.moneymanager.viewmodels.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Settings(navController: NavController) {
+fun Settings(
+	navController: NavController,
+	settingsViewModel: SettingsViewModel = hiltViewModel()
+) {
+
 	Scaffold(
 		topBar = {
 			MediumTopAppBar(
@@ -65,18 +74,33 @@ fun Settings(navController: NavController) {
 					}
 				}
 			)
-		},
-		content = { innerPadding ->
-			Column(modifier = Modifier.padding(innerPadding)) {
-				Column(modifier = Modifier
+		}
+	) { innerPadding ->
+		Column(modifier = Modifier.padding(innerPadding)) {
+			Column(
+				modifier = Modifier
 					.padding(horizontal = 8.dp, vertical = 16.dp)
 					.clip(RoundedCornerShape(8.dp))
 					.background(BackgroundElevated)
 					.fillMaxWidth()
+			) {
+				TableRow(label = "Erase all Data", isDestructive = true)
+				Row(
+					modifier = Modifier
+						.background(BackgroundElevated)
+						.height(1.dp)
 				) {
-					TableRow(label = "Erase all Data", isDestructive = true)
+					HorizontalDivider(thickness = 1.dp, color = DividerColor)
 				}
+				TableRow(
+					label = "Log out",
+					isDestructive = true,
+					modifier = Modifier.clickable {
+						settingsViewModel.logout()
+						navController.navigate("signin")
+					}
+				)
 			}
 		}
-	)
+	}
 }

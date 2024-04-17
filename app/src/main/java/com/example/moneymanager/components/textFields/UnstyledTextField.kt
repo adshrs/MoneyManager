@@ -1,4 +1,4 @@
-package com.example.moneymanager.components
+package com.example.moneymanager.components.textFields
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement

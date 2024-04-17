@@ -7,9 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.moneymanager.models.Expense
+import com.example.moneymanager.models.expense.ExpenseResponse
 import com.example.moneymanager.models.Recurrence
-import com.example.moneymanager.models.groupByDayOfWeek
+import com.example.moneymanager.models.expense.groupByDayOfWeek
 import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.utils.simplifyNumber
 import com.github.tehras.charts.bar.BarChart
@@ -19,8 +19,8 @@ import com.github.tehras.charts.bar.renderer.yaxis.SimpleYAxisDrawer
 import java.time.DayOfWeek
 
 @Composable
-fun WeeklyChart(expenses: List<Expense>) {
-	val groupedExpenses = expenses.groupByDayOfWeek()
+fun WeeklyChart(expens: List<ExpenseResponse>) {
+	val groupedExpenses = expens.groupByDayOfWeek()
 
 	BarChart(
 		barChartData = BarChartData(

@@ -7,9 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.moneymanager.models.Expense
+import com.example.moneymanager.models.expense.ExpenseResponse
 import com.example.moneymanager.models.Recurrence
-import com.example.moneymanager.models.groupByDayOfMonth
+import com.example.moneymanager.models.expense.groupByDayOfMonth
 import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.utils.simplifyNumber
 import com.github.tehras.charts.bar.BarChart
@@ -17,8 +17,8 @@ import com.github.tehras.charts.bar.BarChartData
 import com.github.tehras.charts.bar.renderer.yaxis.SimpleYAxisDrawer
 
 @Composable
-fun MonthlyChart(expenses: List<Expense>, numberOfDays: Int) {
-	val groupedExpenses = expenses.groupByDayOfMonth()
+fun MonthlyChart(expens: List<ExpenseResponse>, numberOfDays: Int) {
+	val groupedExpenses = expens.groupByDayOfMonth()
 
 	BarChart(
 		barChartData = BarChartData(

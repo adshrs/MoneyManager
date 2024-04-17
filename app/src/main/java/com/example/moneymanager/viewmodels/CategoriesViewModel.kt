@@ -1,93 +1,122 @@
 package com.example.moneymanager.viewmodels
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
-import com.example.moneymanager.models.Category
+import androidx.lifecycle.viewModelScope
+import com.example.moneymanager.models.category.CategoryResponse
+import com.example.moneymanager.repository.CategoryRepository
 import com.example.moneymanager.ui.theme.Primary
+import com.example.moneymanager.utils.NetworkResult
+import com.example.moneymanager.utils.TokenManager
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import javax.inject.Inject
 
 data class CategoriesScreenState(
 	val newCategoryColor: Color = Primary,
 	val newCategoryName: String = "",
 	val colorPickerOpened: Boolean = false,
-	val categories: List<Category> = listOf(
-		Category("Groceries", Color.Red),
-		Category("Food", Color.Blue),
-		Category("Stationary", Color.White),
-		Category("Cosmetics", Color.Green),
-		Category("Furniture", Color.Yellow),
-		Category("Electronics", Color.Cyan)
-	)
+	var categories: List<CategoryResponse> = listOf(),
+	var userId: String = "",
+	var deleteWarningVisible: Boolean = false,
+	val categoryIdToDelete: String = "",
+	var isLoading: Boolean = false
 )
 
-class CategoriesViewModel : ViewModel() {
+@HiltViewModel
+class CategoriesViewModel @Inject constructor(
+	private val categoryRepository: CategoryRepository
+) : ViewModel() {
+
 	private val _uiState = MutableStateFlow(CategoriesScreenState())
 	val uiState: StateFlow<CategoriesScreenState> = _uiState.asStateFlow()
 
-	fun setNewCategoryColor(color: Color) {
+	private val categoryResultChannel = Channel<NetworkResult<List<CategoryResponse>>>()
+	val categoryNetworkResults = categoryResultChannel.receiveAsFlow()
+
+	private val statusResultChannel = Channel<NetworkResult<String>>()
+	val statusNetworkResults = statusResultChannel.receiveAsFlow()
+
+	@Inject
+	lateinit var tokenManager: TokenManager
+
+	init {
+		getCategories()
+	}
+
+	fun showDeleteWarning(categoryId: String) {
 		_uiState.update {
 			it.copy(
-				newCategoryColor = color
+				deleteWarningVisible = true,
+				categoryIdToDelete = categoryId
 			)
 		}
 	}
 
-	fun setNewCategoryName(name: String) {
+	fun hideDeleteWarning() {
 		_uiState.update {
 			it.copy(
-				newCategoryName = name
+				deleteWarningVisible = false,
+				categoryIdToDelete = ""
 			)
 		}
 	}
 
-	fun showColorPicker() {
-		_uiState.update {
-			it.copy(
-				colorPickerOpened = true
-			)
+	fun updateCategories(categories: List<CategoryResponse>) {
+		_uiState.update { it.copy(categories = categories) }
+	}
+
+	 private fun getCategories() {
+		viewModelScope.launch {
+			_uiState.update { it.copy(isLoading = true) }
+			val response = categoryRepository.getCategories()
+
+			if (response.isSuccessful && response.body() != null) {
+				categoryResultChannel.send(NetworkResult.Success(response.body()!!))
+				Log.d("MONEYMANAGERTAG", "${response.body()}")
+			}
+			else if (response.errorBody() != null) {
+				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
+				categoryResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
+				Log.e("MONEYMANAGERTAG", errorObj.getString("message"))
+			}
+			else {
+				categoryResultChannel.send(NetworkResult.Error("Something went wrong"))
+				Log.e("MONEYMANAGERTAG", "Something went wrong")
+			}
+			_uiState.update { it.copy(isLoading = false) }
 		}
 	}
 
-	fun hideColorPicker() {
-		_uiState.update {
-			it.copy(
-				colorPickerOpened = false
-			)
+	fun deleteCategory(categoryId: String) {
+		viewModelScope.launch {
+			_uiState.update { it.copy(isLoading = true) }
+			val response = categoryRepository.deleteCategory(categoryId)
+			if (response.isSuccessful) {
+				statusResultChannel.send(NetworkResult.Success("Category Deleted"))
+			}
+			else if (response.errorBody() != null) {
+				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
+				statusResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
+			}
+			else {
+				statusResultChannel.send(NetworkResult.Error("Something went wrong"))
+			}
+			_uiState.update { it.copy(isLoading = false) }
 		}
+
+		getCategories()
 	}
 
-	fun createNewCategory() {
-		//TODO: save new category to db
-		val newCategoriesList = mutableListOf<Category>()
-		newCategoriesList.addAll(_uiState.value.categories)
-
-		_uiState.update {
-			it.copy(
-				categories = newCategoriesList.plus(
-					Category(
-						uiState.value.newCategoryName,
-						uiState.value.newCategoryColor
-					)
-				),
-				newCategoryName = "",
-				newCategoryColor = Primary
-			)
-		}
-	}
-
-	fun deleteCategory(category: Category) {
-		val index = _uiState.value.categories.indexOf(category)
-		val newList = mutableListOf<Category>()
-		newList.addAll(_uiState.value.categories)
-		newList.removeAt(index)
-
-		_uiState.update {
-			it.copy(
-				categories = newList
-			)
-		}
+	fun removeToken() {
+		tokenManager.deleteToken()
 	}
 }
