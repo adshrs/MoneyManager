@@ -1,1 +1,1 @@
-Expense and income management application for android.
+Expense and income management application for android using Jetpack Compose.
