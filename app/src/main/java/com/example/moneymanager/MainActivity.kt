@@ -38,7 +38,7 @@ import com.example.moneymanager.pages.Add
 import com.example.moneymanager.pages.AddCategory
 import com.example.moneymanager.pages.Analytics
 import com.example.moneymanager.pages.Categories
-import com.example.moneymanager.pages.Expenses
+import com.example.moneymanager.pages.Home
 import com.example.moneymanager.pages.Menu
 import com.example.moneymanager.pages.Settings
 import com.example.moneymanager.pages.SignIn
@@ -97,9 +97,9 @@ private fun MoneyManager(
 					NavigationBarItem(
 						selected = backStackEntry?.destination?.route?.startsWith("home/expenses")
 							?: false,
-						onClick = { navController.navigate("home/expenses") },
+						onClick = { navController.navigate("home") },
 						icon = {
-							if (backStackEntry?.destination?.route == "home/expenses") {
+							if (backStackEntry?.destination?.route == "home") {
 								Icon(
 									painterResource(id = R.drawable.icon_navbar_home_selected),
 									contentDescription = "Expenses"
@@ -237,22 +237,12 @@ private fun MoneyManager(
 						SignUp(navController = navController)
 					}
 				}
-				composable("home/expenses") {
+				composable("home") {
 					Surface(
 						modifier = Modifier
 							.fillMaxSize()
-							.padding(bottom = 55.dp)
 					) {
-						Expenses(navController = navController)
-					}
-				}
-				composable("home/incomes") {
-					Surface(
-						modifier = Modifier
-							.fillMaxSize()
-							.padding(bottom = 55.dp)
-					) {
-						Greeting("Incomes")
+						Home(navController = navController)
 					}
 				}
 				composable("analytics") {

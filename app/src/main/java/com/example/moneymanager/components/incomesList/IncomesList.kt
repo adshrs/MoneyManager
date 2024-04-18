@@ -1,4 +1,4 @@
-package com.example.moneymanager.components.expensesList
+package com.example.moneymanager.components.incomesList
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
@@ -12,36 +12,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.moneymanager.components.ExpensesDayGroup
+import com.example.moneymanager.components.IncomesDayGroup
 import com.example.moneymanager.models.category.CategoryResponse
-import com.example.moneymanager.models.expense.ExpenseResponse
-import com.example.moneymanager.models.expense.groupByDay
+import com.example.moneymanager.models.income.IncomeResponse
+import com.example.moneymanager.models.income.groupByDay
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
-fun ExpensesList(
-	expenses: List<ExpenseResponse>,
+fun IncomesList(
+	incomes: List<IncomeResponse>,
 	categories: List<CategoryResponse>,
 	modifier: Modifier = Modifier
 ) {
-	val groupedExpenses = expenses.groupByDay()
+	val groupedIncomes = incomes.groupByDay()
 
 	Column(modifier = modifier) {
-		if (groupedExpenses.isEmpty()) {
+		if (groupedIncomes.isEmpty()) {
 			Box(
 				modifier = Modifier
 					.fillMaxWidth()
 					.height(333.dp),
 				contentAlignment = Alignment.TopCenter
-				) {
+			) {
 				Text(text = "No data for this date range.", modifier.padding(top = 130.dp))
 			}
 		} else {
-			groupedExpenses.keys.forEach { date ->
-				if (groupedExpenses[date] != null) {
-					ExpensesDayGroup(
+			groupedIncomes.keys.forEach { date ->
+				if (groupedIncomes[date] != null) {
+					IncomesDayGroup(
 						date = date,
-						dayExpenses = groupedExpenses[date]!!,
+						dayIncomes = groupedIncomes[date]!!,
 						categories = categories,
 						modifier = Modifier.padding(bottom = 28.dp)
 					)
@@ -53,8 +53,8 @@ fun ExpensesList(
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ExpensesListPreview() {
+fun IncomesListPreview() {
 	MoneyManagerTheme {
-		ExpensesList(expenses = mockExpenses, categories = listOf())
+		IncomesList(incomes = mockIncomes, categories = listOf())
 	}
 }

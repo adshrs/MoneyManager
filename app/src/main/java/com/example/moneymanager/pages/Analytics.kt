@@ -1,16 +1,20 @@
 package com.example.moneymanager.pages
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -21,9 +25,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -31,6 +37,8 @@ import com.example.moneymanager.R
 import com.example.moneymanager.components.AnalyticPage
 import com.example.moneymanager.components.LoadingIndicator
 import com.example.moneymanager.models.Recurrence
+import com.example.moneymanager.ui.theme.BackgroundElevated
+import com.example.moneymanager.ui.theme.Destructive
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 import com.example.moneymanager.ui.theme.TopAppBarBackground
 import com.example.moneymanager.ui.theme.Typography
@@ -46,6 +54,7 @@ fun Analytics(
 ) {
 
 	val uiState by analyticsViewModel.uiState.collectAsState()
+	val expensesDayGroupUiState by analyticsViewModel.expensesDayGroupUiState.collectAsState()
 	val context = LocalContext.current
 
 	val recurrences = listOf(
@@ -98,6 +107,35 @@ fun Analytics(
 					} else {
 						Toast.makeText(context, result.message, Toast.LENGTH_SHORT)
 							.show()
+					}
+				}
+
+				is NetworkResult.Loading -> {}
+			}
+		}
+	}
+
+	LaunchedEffect(analyticsViewModel, context) {
+		analyticsViewModel.statusNetworkResults.collect { result ->
+			when (result) {
+				is NetworkResult.Success -> {
+					navController.navigate("analytics") {
+						popUpTo("analytics") {
+							inclusive = true
+						}
+					}
+					Toast.makeText(context, "Expense Deleted", Toast.LENGTH_SHORT)
+						.show()
+				}
+
+				is NetworkResult.Error -> {
+					if (result.message!!.startsWith("JWT expired")) {
+						analyticsViewModel.removeToken()
+						navController.navigate("signin")
+						Toast.makeText(context, "Session Expired, sign in again", Toast.LENGTH_SHORT)
+							.show()
+					} else if (result.message.startsWith("Invalid compact JWT string")) {
+						navController.navigate("signin")
 					}
 				}
 
@@ -175,6 +213,47 @@ fun Analytics(
 						)
 					}
 				}
+			}
+
+			if (expensesDayGroupUiState.deleteWarningVisible) {
+				AlertDialog(
+					onDismissRequest = analyticsViewModel::hideDeleteWarning,
+					confirmButton = {
+						OutlinedButton(
+							onClick = {
+								analyticsViewModel.deleteExpense(expensesDayGroupUiState.expenseIdToDelete)
+								analyticsViewModel.hideDeleteWarning()
+							},
+							border = BorderStroke(1.dp, Destructive)
+						) {
+							Text(text = "Delete", color = Color.White)
+						}
+					},
+					dismissButton = {
+						OutlinedButton(
+							onClick = analyticsViewModel::hideDeleteWarning
+						) {
+							Text(text = "Back", color = Color.White)
+						}
+					},
+					title = { Text(text = "Remove Expense?", style = Typography.headlineLarge) },
+					text = {
+						Text(
+							text = "This Expense will be removed permanently.",
+							style = Typography.labelMedium
+						)
+					},
+					icon = {
+						Icon(
+							painterResource(id = R.drawable.icon_delete),
+							contentDescription = "Delete category"
+						)
+					},
+					iconContentColor = Destructive,
+					titleContentColor = Destructive,
+					containerColor = BackgroundElevated,
+					shape = RoundedCornerShape(20.dp)
+				)
 			}
 		}
 	)

@@ -37,11 +37,17 @@ class AnalyticsViewModel @Inject constructor(
 	private val _uiState = MutableStateFlow(AnalyticsScreenState())
 	val uiState: StateFlow<AnalyticsScreenState> = _uiState.asStateFlow()
 
+	private val _expensesDayGroupUiState = MutableStateFlow(ExpensesDayGroupState())
+	val expensesDayGroupUiState: StateFlow<ExpensesDayGroupState> = _expensesDayGroupUiState.asStateFlow()
+
 	private val expenseResultChannel = Channel<NetworkResult<List<ExpenseResponse>>>()
 	val expenseNetworkResults = expenseResultChannel.receiveAsFlow()
 
 	private val categoryResultChannel = Channel<NetworkResult<List<CategoryResponse>>>()
 	val categoryNetworkResults = categoryResultChannel.receiveAsFlow()
+
+	private val statusResultChannel = Channel<NetworkResult<String>>()
+	val statusNetworkResults = statusResultChannel.receiveAsFlow()
 
 	@Inject
 	lateinit var tokenManager: TokenManager
@@ -49,6 +55,24 @@ class AnalyticsViewModel @Inject constructor(
 	init {
 		getCategories()
 		getExpenses()
+	}
+
+	fun showDeleteWarning(categoryId: String) {
+		_expensesDayGroupUiState.update {
+			it.copy(
+				deleteWarningVisible = true,
+				expenseIdToDelete = categoryId
+			)
+		}
+	}
+
+	fun hideDeleteWarning() {
+		_expensesDayGroupUiState.update {
+			it.copy(
+				deleteWarningVisible = false,
+				expenseIdToDelete = ""
+			)
+		}
 	}
 
 	fun setRecurrence(recurrence: Recurrence) {
@@ -127,6 +151,26 @@ class AnalyticsViewModel @Inject constructor(
 			}
 			_uiState.update { it.copy(isLoading = false) }
 		}
+	}
+
+	fun deleteExpense(expenseId: String) {
+		viewModelScope.launch {
+			_uiState.update { it.copy(isLoading = true) }
+			val response = expenseRepository.deleteExpense(expenseId)
+			if (response.isSuccessful) {
+				statusResultChannel.send(NetworkResult.Success("Expense Deleted"))
+			}
+			else if (response.errorBody() != null) {
+				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
+				statusResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
+			}
+			else {
+				statusResultChannel.send(NetworkResult.Error("Something went wrong"))
+			}
+			_uiState.update { it.copy(isLoading = false) }
+		}
+
+		getCategories()
 	}
 
 	fun removeToken() {

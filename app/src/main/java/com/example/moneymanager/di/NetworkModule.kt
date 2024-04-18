@@ -4,6 +4,7 @@ import com.example.moneymanager.api.AuthApi
 import com.example.moneymanager.api.AuthInterceptor
 import com.example.moneymanager.api.CategoryApi
 import com.example.moneymanager.api.ExpenseApi
+import com.example.moneymanager.api.IncomeApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,5 +53,13 @@ class NetworkModule {
 		return retrofitBuilder
 			.client(okHttpClient)
 			.build().create(ExpenseApi::class.java)
+	}
+
+	@Singleton
+	@Provides
+	fun providesIncomeAPI(retrofitBuilder: Builder, okHttpClient: OkHttpClient): IncomeApi {
+		return retrofitBuilder
+			.client(okHttpClient)
+			.build().create(IncomeApi::class.java)
 	}
 }

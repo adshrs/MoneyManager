@@ -9,30 +9,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.moneymanager.models.category.CategoryResponse
-import com.example.moneymanager.models.expense.DayExpenses
-import com.example.moneymanager.ui.theme.Destructive
-import com.example.moneymanager.ui.theme.Primary
+import com.example.moneymanager.models.income.DayIncomes
 import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.ui.theme.Typography
 import com.example.moneymanager.utils.formatDay
-import com.example.moneymanager.viewmodels.AnalyticsViewModel
-import com.example.moneymanager.viewmodels.ExpensesViewModel
+import com.example.moneymanager.viewmodels.IncomesViewModel
 import java.text.DecimalFormat
 import java.time.LocalDate
 
 @Composable
-fun ExpensesDayGroup(
+fun IncomesDayGroup(
 	date: LocalDate,
-	dayExpenses: DayExpenses,
+	dayIncomes: DayIncomes,
 	categories: List<CategoryResponse>,
 	modifier: Modifier = Modifier,
-	expensesViewModel: ExpensesViewModel = hiltViewModel(),
-	analyticsViewModel: AnalyticsViewModel = hiltViewModel()
+	incomesViewModel: IncomesViewModel = hiltViewModel(),
+//	analyticsViewModel: AnalyticsViewModel = hiltViewModel()
 ) {
+	val uiState by incomesViewModel.incomesDayGroupUiState.collectAsState()
 
 	Column(modifier = modifier) {
 		Text(
@@ -41,32 +42,24 @@ fun ExpensesDayGroup(
 			color = TextSecondary
 		)
 		HorizontalDivider(modifier = Modifier.padding(top = 10.dp, bottom = 6.dp))
-		dayExpenses.expenses.forEach { expense ->
-			val categoryResponse = categories.find { it.id == expense.categoryId }
-			if (categoryResponse != null) {
-				ExpenseRow(
-					expenseResponse = expense,
-					categoryResponse = categoryResponse,
-					modifier = Modifier
-						.padding(top = 6.dp)
-						.clickable {
-							expensesViewModel.showDeleteWarning(expense.id)
-							analyticsViewModel.showDeleteWarning(expense.id)
-						}
-				)
-			}
-			else {
-				ExpenseRow(
-					expenseResponse = expense,
-					categoryResponse = CategoryResponse(
-						id = "",
-						name = "Expense",
-						color = Primary.toString(),
-						userId = ""
-					),
-					modifier = Modifier.padding(top = 6.dp)
-				)
-			}
+		dayIncomes.incomes.forEach { income ->
+
+			IncomeRow(
+				incomeResponse = income,
+				categoryResponse = CategoryResponse(
+					id = "",
+					name = "Income",
+					color = Color.Green.toString(),
+					userId = ""
+				),
+				modifier = Modifier
+					.padding(top = 6.dp)
+					.clickable {
+						incomesViewModel.showDeleteWarning(income.id)
+//						analyticsViewModel.showDeleteWarning(expense.id)
+					}
+			)
+
 		}
 		HorizontalDivider(modifier = Modifier.padding(top = 12.dp, bottom = 10.dp))
 		Row(
@@ -75,9 +68,9 @@ fun ExpensesDayGroup(
 		) {
 			Text(text = "Total:", style = Typography.bodyMedium, color = TextSecondary)
 			Text(
-				text = "Rs. ${DecimalFormat("0.#").format(dayExpenses.total)}",
+				text = "Rs. ${DecimalFormat("0.#").format(dayIncomes.total)}",
 				style = Typography.labelMedium,
-				color = Destructive
+				color = Color.Green
 			)
 		}
 	}

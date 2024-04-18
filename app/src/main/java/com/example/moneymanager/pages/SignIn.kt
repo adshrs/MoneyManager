@@ -75,7 +75,7 @@ fun SignIn(
 		) {
 			LoadingIndicator(size = 32.dp, color = Color.Black)
 		}
-		navController.navigate("home/expenses") {
+		navController.navigate("home") {
 			popUpTo("signin") {
 				inclusive = true
 			}
@@ -89,7 +89,7 @@ fun SignIn(
 
 			when (result) {
 				is NetworkResult.Success -> {
-					navController.navigate("home/expenses") {
+					navController.navigate("home") {
 						popUpTo("signin") {
 							inclusive = true
 						}
@@ -97,7 +97,7 @@ fun SignIn(
 				}
 
 				is NetworkResult.Error -> {
-					uiState.errorText = result.message.toString()
+					uiState.errorText = "Incorrect username or password"
 				}
 
 				is NetworkResult.Loading -> {

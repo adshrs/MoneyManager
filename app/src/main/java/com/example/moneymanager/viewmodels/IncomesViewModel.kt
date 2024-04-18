@@ -2,11 +2,12 @@ package com.example.moneymanager.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.moneymanager.components.incomesList.mockIncomes
 import com.example.moneymanager.models.Recurrence
 import com.example.moneymanager.models.category.CategoryResponse
-import com.example.moneymanager.models.expense.ExpenseResponse
+import com.example.moneymanager.models.income.IncomeResponse
 import com.example.moneymanager.repository.CategoryRepository
-import com.example.moneymanager.repository.ExpenseRepository
+import com.example.moneymanager.repository.IncomeRepository
 import com.example.moneymanager.utils.NetworkResult
 import com.example.moneymanager.utils.TokenManager
 import com.example.moneymanager.utils.calculateDateRange
@@ -25,35 +26,35 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
-data class ExpensesScreenState(
+data class IncomesScreenState(
 	val recurrence: Recurrence = Recurrence.Daily,
 	val sumTotal: Double = 0.0,
 	var recurrenceMenuOpened: Boolean = false,
-	var expenses: List<ExpenseResponse> = listOf(),
-	var filteredExpenses: List<ExpenseResponse> = listOf(),
+	var incomes: List<IncomeResponse> = mockIncomes,
+	var filteredIncomes: List<IncomeResponse> = listOf(),
 	var categories: List<CategoryResponse> = listOf(),
 	var isLoading: Boolean = false
 )
 
-data class ExpensesDayGroupState(
+data class IncomesDayGroupState(
 	var deleteWarningVisible: Boolean = false,
-	val expenseIdToDelete: String = ""
+	val incomeIdToDelete: String = ""
 )
 
 @HiltViewModel
-class ExpensesViewModel @Inject constructor(
-	private val expenseRepository: ExpenseRepository,
+class IncomesViewModel @Inject constructor(
+	private val incomeRepository: IncomeRepository,
 	private val categoryRepository: CategoryRepository
 ): ViewModel() {
 
-	private val _uiState = MutableStateFlow(ExpensesScreenState())
-	val uiState: StateFlow<ExpensesScreenState> = _uiState.asStateFlow()
+	private val _uiState = MutableStateFlow(IncomesScreenState())
+	val uiState: StateFlow<IncomesScreenState> = _uiState.asStateFlow()
 
-	private val _expensesDayGroupUiState = MutableStateFlow(ExpensesDayGroupState())
-	val expensesDayGroupUiState: StateFlow<ExpensesDayGroupState> = _expensesDayGroupUiState.asStateFlow()
+	private val _incomesDayGroupUiState = MutableStateFlow(IncomesDayGroupState())
+	val incomesDayGroupUiState: StateFlow<IncomesDayGroupState> = _incomesDayGroupUiState.asStateFlow()
 
-	private val expenseResultChannel = Channel<NetworkResult<List<ExpenseResponse>>>()
-	val expenseNetworkResults = expenseResultChannel.receiveAsFlow()
+	private val incomeResultChannel = Channel<NetworkResult<List<IncomeResponse>>>()
+	val incomeNetworkResults = incomeResultChannel.receiveAsFlow()
 
 	private val categoryResultChannel = Channel<NetworkResult<List<CategoryResponse>>>()
 	val categoryNetworkResults = categoryResultChannel.receiveAsFlow()
@@ -66,23 +67,23 @@ class ExpensesViewModel @Inject constructor(
 
 	init {
 		getCategories()
-		getExpenses()
+		getIncomes()
 	}
 
-	fun showDeleteWarning(expenseId: String) {
-		_expensesDayGroupUiState.update {
+	fun showDeleteWarning(incomeId: String) {
+		_incomesDayGroupUiState.update {
 			it.copy(
 				deleteWarningVisible = true,
-				expenseIdToDelete = expenseId
+				incomeIdToDelete = incomeId
 			)
 		}
 	}
 
 	fun hideDeleteWarning() {
-		_expensesDayGroupUiState.update {
+		_incomesDayGroupUiState.update {
 			it.copy(
 				deleteWarningVisible = false,
-				expenseIdToDelete = ""
+				incomeIdToDelete = ""
 			)
 		}
 	}
@@ -92,17 +93,17 @@ class ExpensesViewModel @Inject constructor(
 			_uiState.update { it.copy(isLoading = true) }
 			val (start, end) = calculateDateRange(recurrence, 0)
 
-			val filteredExpenses = uiState.value.expenses.filter {
+			val filteredIncomes = mockIncomes.filter {
 				val date = LocalDate.parse(it.date, DateTimeFormatter.ISO_DATE)
 				(date.isAfter(start) && date.isBefore(end)) || date.isEqual(start) || date.isEqual(end)
 			}
 
-			val sumTotal = filteredExpenses.sumOf { it.amount }
+			val sumTotal = filteredIncomes.sumOf { it.amount }
 
 			_uiState.update {
 				it.copy(
 					recurrence = recurrence,
-					filteredExpenses = filteredExpenses,
+					filteredIncomes = filteredIncomes,
 					sumTotal = sumTotal
 				)
 			}
@@ -111,10 +112,10 @@ class ExpensesViewModel @Inject constructor(
 		}
 	}
 
-	fun updateExpenses(expenses: List<ExpenseResponse>) {
+	fun updateIncomes(incomes: List<IncomeResponse>) {
 		_uiState.update {
 			it.copy(
-				expenses = expenses
+				incomes = incomes
 			)
 		}
 	}
@@ -146,31 +147,31 @@ class ExpensesViewModel @Inject constructor(
 		}
 	}
 
-	private fun getExpenses() {
+	private fun getIncomes() {
 		viewModelScope.launch {
 			_uiState.update { it.copy(isLoading = true) }
-			val response = expenseRepository.getExpenses()
+			val response = incomeRepository.getIncomes()
 
 			if (response.isSuccessful && response.body() != null) {
-				expenseResultChannel.send(NetworkResult.Success(response.body()!!))
+				incomeResultChannel.send(NetworkResult.Success(response.body()!!))
 			}
 			else if (response.errorBody() != null) {
 				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
-				expenseResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
+				incomeResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
 			}
 			else {
-				expenseResultChannel.send(NetworkResult.Error("Something went wrong"))
+				incomeResultChannel.send(NetworkResult.Error("Something went wrong"))
 			}
 			_uiState.update { it.copy(isLoading = false) }
 		}
 	}
 
-	fun deleteExpense(expenseId: String) {
+	fun deleteIncome(incomeId: String) {
 		viewModelScope.launch {
 			_uiState.update { it.copy(isLoading = true) }
-			val response = expenseRepository.deleteExpense(expenseId)
+			val response = incomeRepository.deleteIncomes(incomeId)
 			if (response.isSuccessful) {
-				statusResultChannel.send(NetworkResult.Success("Expense Deleted"))
+				statusResultChannel.send(NetworkResult.Success("Income Deleted"))
 			}
 			else if (response.errorBody() != null) {
 				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())

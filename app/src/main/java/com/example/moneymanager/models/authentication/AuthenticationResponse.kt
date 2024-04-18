@@ -1,6 +1,5 @@
 package com.example.moneymanager.models.authentication
 
 data class AuthenticationResponse(
-	val accessToken: String,
-	val refreshToken: String
+	val accessToken: String
 )

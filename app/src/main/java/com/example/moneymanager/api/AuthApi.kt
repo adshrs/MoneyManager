@@ -7,7 +7,6 @@ import com.example.moneymanager.models.user.UserResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
-import retrofit2.http.Path
 
 interface AuthApi {
 
@@ -16,7 +15,4 @@ interface AuthApi {
 
 	@POST("/api/auth")
 	suspend fun signIn(@Body request: AuthenticationRequest): Response<AuthenticationResponse>
-
-	@POST("/api/auth/logout/{username}")
-	suspend fun logout(@Path("username") username: String): Response<Void>
 }

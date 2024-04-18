@@ -124,7 +124,7 @@ fun Add(
 			when (result) {
 				is NetworkResult.Success -> {
 					addViewModel.revertFields()
-					navController.navigate("home/expenses") {
+					navController.navigate("home") {
 					}
 					Toast.makeText(context, "New expense added", Toast.LENGTH_SHORT)
 						.show()
@@ -429,7 +429,7 @@ fun Add(
 							.padding(16.dp)
 							.width(200.dp)
 							.height(50.dp)
-							.border(4.dp, BackgroundElevated, RoundedCornerShape(100f)),
+							.border(4.dp, Color.Gray, RoundedCornerShape(100f)),
 						shape = RoundedCornerShape(100f),
 						colors = ButtonColors(
 							containerColor = com.example.moneymanager.ui.theme.Button,

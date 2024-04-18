@@ -315,7 +315,7 @@ fun Categories(
 								Text(text = "Back", color = Color.White)
 							}
 						},
-						title = { Text(text = "Permanently delete?", style = Typography.headlineLarge) },
+						title = { Text(text = "Remove Permanently?", style = Typography.headlineLarge) },
 						text = {
 							Text(
 								text = "After deleting this category, all existing expenses that belongs " +

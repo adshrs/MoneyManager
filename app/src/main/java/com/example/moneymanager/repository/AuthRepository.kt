@@ -61,22 +61,4 @@ class AuthRepository @Inject constructor(private val authApi: AuthApi) {
 			loginResultChannel.send(NetworkResult.Error("Something went wrong"))
 		}
 	}
-
-	suspend fun logoutUser(username: String) {
-		logoutResultChannel.send(NetworkResult.Loading())
-
-		val response = authApi.logout(username)
-
-		if (response.isSuccessful) {
-			logoutResultChannel.send(NetworkResult.Success("Logged out successfully"))
-			tokenManager.deleteToken()
-		}
-		else if (response.errorBody() != null) {
-			val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
-			loginResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
-		}
-		else {
-			loginResultChannel.send(NetworkResult.Error("Something went wrong"))
-		}
-	}
 }
