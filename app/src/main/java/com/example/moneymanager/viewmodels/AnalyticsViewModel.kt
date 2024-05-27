@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.moneymanager.models.Recurrence
 import com.example.moneymanager.models.category.CategoryResponse
 import com.example.moneymanager.models.expense.ExpenseResponse
+import com.example.moneymanager.models.income.IncomeResponse
 import com.example.moneymanager.repository.CategoryRepository
 import com.example.moneymanager.repository.ExpenseRepository
+import com.example.moneymanager.repository.IncomeRepository
 import com.example.moneymanager.utils.NetworkResult
 import com.example.moneymanager.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,9 +23,11 @@ import org.json.JSONObject
 import javax.inject.Inject
 
 data class AnalyticsScreenState(
+	val analyticsType: String = "Expense",
 	val recurrence: Recurrence = Recurrence.Weekly,
 	val dateRangeMenuOpened: Boolean = false,
 	var expenses: List<ExpenseResponse> = listOf(),
+	var incomes: List<IncomeResponse> = listOf(),
 	var categories: List<CategoryResponse> = listOf(),
 	var isLoading: Boolean = false
 )
@@ -31,6 +35,7 @@ data class AnalyticsScreenState(
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
 	private val expenseRepository: ExpenseRepository,
+	private val incomeRepository: IncomeRepository,
 	private val categoryRepository: CategoryRepository
 ) : ViewModel() {
 
@@ -40,8 +45,14 @@ class AnalyticsViewModel @Inject constructor(
 	private val _expensesDayGroupUiState = MutableStateFlow(ExpensesDayGroupState())
 	val expensesDayGroupUiState: StateFlow<ExpensesDayGroupState> = _expensesDayGroupUiState.asStateFlow()
 
+	private val _incomesDayGroupUiState = MutableStateFlow(IncomesDayGroupState())
+	val incomesDayGroupUiState: StateFlow<IncomesDayGroupState> = _incomesDayGroupUiState.asStateFlow()
+
 	private val expenseResultChannel = Channel<NetworkResult<List<ExpenseResponse>>>()
 	val expenseNetworkResults = expenseResultChannel.receiveAsFlow()
+
+	private val incomeResultChannel = Channel<NetworkResult<List<IncomeResponse>>>()
+	val incomeNetworkResults = incomeResultChannel.receiveAsFlow()
 
 	private val categoryResultChannel = Channel<NetworkResult<List<CategoryResponse>>>()
 	val categoryNetworkResults = categoryResultChannel.receiveAsFlow()
@@ -55,13 +66,31 @@ class AnalyticsViewModel @Inject constructor(
 	init {
 		getCategories()
 		getExpenses()
+		getIncomes()
 	}
 
-	fun showDeleteWarning(categoryId: String) {
+	fun updateAnalyticsTypeSelection(analyticsType: String) {
+		_uiState.update {
+			it.copy(
+				analyticsType = analyticsType
+			)
+		}
+	}
+
+	fun showExpenseDeleteWarning(expenseId: String) {
 		_expensesDayGroupUiState.update {
 			it.copy(
 				deleteWarningVisible = true,
-				expenseIdToDelete = categoryId
+				expenseIdToDelete = expenseId
+			)
+		}
+	}
+
+	fun showIncomeDeleteWarning(incomeId: String) {
+		_incomesDayGroupUiState.update {
+			it.copy(
+				deleteWarningVisible = true,
+				incomeIdToDelete = incomeId
 			)
 		}
 	}
@@ -71,6 +100,12 @@ class AnalyticsViewModel @Inject constructor(
 			it.copy(
 				deleteWarningVisible = false,
 				expenseIdToDelete = ""
+			)
+		}
+		_incomesDayGroupUiState.update {
+			it.copy(
+				deleteWarningVisible = false,
+				incomeIdToDelete = ""
 			)
 		}
 	}
@@ -91,10 +126,18 @@ class AnalyticsViewModel @Inject constructor(
 		}
 	}
 
+	fun updateIncomes(incomes: List<IncomeResponse>) {
+		_uiState.update {
+			it.copy(
+				incomes = incomes
+			)
+		}
+	}
+
 	fun updateCategories(categories: List<CategoryResponse>) {
 		_uiState.update {
 			it.copy(
-				categories = categories
+				categories = _uiState.value.categories.plus(categories)
 			)
 		}
 	}
@@ -118,7 +161,24 @@ class AnalyticsViewModel @Inject constructor(
 	private fun getCategories() {
 		viewModelScope.launch {
 			_uiState.update { it.copy(isLoading = true) }
-			val response = categoryRepository.getCategories()
+			val response = categoryRepository.getCategories("Expense")
+
+			if (response.isSuccessful && response.body() != null) {
+				categoryResultChannel.send(NetworkResult.Success(response.body()!!))
+			}
+			else if (response.errorBody() != null) {
+				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
+				categoryResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
+			}
+			else {
+				categoryResultChannel.send(NetworkResult.Error("Something went wrong"))
+			}
+			_uiState.update { it.copy(isLoading = false) }
+		}
+
+		viewModelScope.launch {
+			_uiState.update { it.copy(isLoading = true) }
+			val response = categoryRepository.getCategories("Income")
 
 			if (response.isSuccessful && response.body() != null) {
 				categoryResultChannel.send(NetworkResult.Success(response.body()!!))
@@ -153,6 +213,25 @@ class AnalyticsViewModel @Inject constructor(
 		}
 	}
 
+	private fun getIncomes() {
+		viewModelScope.launch {
+			_uiState.update { it.copy(isLoading = true) }
+			val response = incomeRepository.getIncomes()
+
+			if (response.isSuccessful && response.body() != null) {
+				incomeResultChannel.send(NetworkResult.Success(response.body()!!))
+			}
+			else if (response.errorBody() != null) {
+				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
+				incomeResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
+			}
+			else {
+				incomeResultChannel.send(NetworkResult.Error("Something went wrong"))
+			}
+			_uiState.update { it.copy(isLoading = false) }
+		}
+	}
+
 	fun deleteExpense(expenseId: String) {
 		viewModelScope.launch {
 			_uiState.update { it.copy(isLoading = true) }
@@ -169,8 +248,24 @@ class AnalyticsViewModel @Inject constructor(
 			}
 			_uiState.update { it.copy(isLoading = false) }
 		}
+	}
 
-		getCategories()
+	fun deleteIncome(incomeId: String) {
+		viewModelScope.launch {
+			_uiState.update { it.copy(isLoading = true) }
+			val response = incomeRepository.deleteIncome(incomeId)
+			if (response.isSuccessful) {
+				statusResultChannel.send(NetworkResult.Success("Income Deleted"))
+			}
+			else if (response.errorBody() != null) {
+				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
+				statusResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
+			}
+			else {
+				statusResultChannel.send(NetworkResult.Error("Something went wrong"))
+			}
+			_uiState.update { it.copy(isLoading = false) }
+		}
 	}
 
 	fun removeToken() {

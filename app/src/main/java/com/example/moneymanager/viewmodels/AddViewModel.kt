@@ -1,12 +1,13 @@
 package com.example.moneymanager.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moneymanager.models.category.CategoryResponse
 import com.example.moneymanager.models.expense.ExpenseRequest
+import com.example.moneymanager.models.income.IncomeRequest
 import com.example.moneymanager.repository.CategoryRepository
 import com.example.moneymanager.repository.ExpenseRepository
+import com.example.moneymanager.repository.IncomeRepository
 import com.example.moneymanager.utils.NetworkResult
 import com.example.moneymanager.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,27 +23,33 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 data class AddScreenState(
+	val typeDropdownSelection: String = "Expense",
 	val amount: String = "",
 	val date: LocalDate = LocalDate.now(),
 	val description: String = "",
 	val categoryName: String? = null,
 	val categoryId: String? = null,
 	val selectedCategoryColor: String? = null,
-	var categories: List<CategoryResponse> = listOf(),
+	var expenseCategories: List<CategoryResponse> = listOf(),
+	var incomeCategories: List<CategoryResponse> = listOf(),
 	val isLoading: Boolean = false
 )
 
 @HiltViewModel
 class AddViewModel @Inject constructor(
 	private val expenseRepository: ExpenseRepository,
+	private val incomeRepository: IncomeRepository,
 	private val categoryRepository: CategoryRepository
 ) : ViewModel() {
 
 	private val _uiState = MutableStateFlow(AddScreenState())
 	val uiState: StateFlow<AddScreenState> = _uiState.asStateFlow()
 
-	private val categoryResultChannel = Channel<NetworkResult<List<CategoryResponse>>>()
-	val categoryNetworkResults = categoryResultChannel.receiveAsFlow()
+	private val expenseCategoryResultChannel = Channel<NetworkResult<List<CategoryResponse>>>()
+	val expenseCategoryNetworkResults = expenseCategoryResultChannel.receiveAsFlow()
+
+	private val incomeCategoryResultChannel = Channel<NetworkResult<List<CategoryResponse>>>()
+	val incomeCategoryNetworkResults = incomeCategoryResultChannel.receiveAsFlow()
 
 	private val statusResultChannel = Channel<NetworkResult<String>>()
 	val statusNetworkResults = statusResultChannel.receiveAsFlow()
@@ -51,7 +58,24 @@ class AddViewModel @Inject constructor(
 	lateinit var tokenManager: TokenManager
 
 	init {
-		getCategories()
+		getExpenseCategories()
+		getIncomeCategories()
+	}
+
+	fun updateExpenseCategories(categories: List<CategoryResponse>) {
+		_uiState.update { it.copy(expenseCategories = categories) }
+	}
+
+	fun updateIncomeCategories(categories: List<CategoryResponse>) {
+		_uiState.update { it.copy(incomeCategories = categories) }
+	}
+
+	fun updateDropdownSelection(selected: String) {
+		_uiState.update {
+			it.copy(
+				typeDropdownSelection = selected
+			)
+		}
 	}
 
 	fun setAmount(amount: String) {
@@ -121,27 +145,35 @@ class AddViewModel @Inject constructor(
 		}
 	}
 
-	fun updateCategories(categories: List<CategoryResponse>) {
-		_uiState.update { it.copy(categories = categories) }
-	}
-
-	private fun getCategories() {
+	private fun getExpenseCategories() {
 		viewModelScope.launch {
 			_uiState.update { it.copy(isLoading = true) }
-			val response = categoryRepository.getCategories()
+			val response = categoryRepository.getCategories("Expense")
 
 			if (response.isSuccessful && response.body() != null) {
-				categoryResultChannel.send(NetworkResult.Success(response.body()!!))
-				Log.d("MONEYMANAGERTAG", "${response.body()}")
-			}
-			else if (response.errorBody() != null) {
+				expenseCategoryResultChannel.send(NetworkResult.Success(response.body()!!))
+			} else if (response.errorBody() != null) {
 				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
-				categoryResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
-				Log.e("MONEYMANAGERTAG", errorObj.getString("message"))
+				expenseCategoryResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
+			} else {
+				expenseCategoryResultChannel.send(NetworkResult.Error("Something went wrong"))
 			}
-			else {
-				categoryResultChannel.send(NetworkResult.Error("Something went wrong"))
-				Log.e("MONEYMANAGERTAG", "Something went wrong")
+			_uiState.update { it.copy(isLoading = false) }
+		}
+	}
+
+	private fun getIncomeCategories() {
+		viewModelScope.launch {
+			_uiState.update { it.copy(isLoading = true) }
+			val response = categoryRepository.getCategories("Income")
+
+			if (response.isSuccessful && response.body() != null) {
+				incomeCategoryResultChannel.send(NetworkResult.Success(response.body()!!))
+			} else if (response.errorBody() != null) {
+				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
+				incomeCategoryResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
+			} else {
+				incomeCategoryResultChannel.send(NetworkResult.Error("Something went wrong"))
 			}
 			_uiState.update { it.copy(isLoading = false) }
 		}
@@ -154,6 +186,25 @@ class AddViewModel @Inject constructor(
 
 			if (response.isSuccessful && response.body() != null) {
 				statusResultChannel.send(NetworkResult.Success("Expense Added"))
+			}
+			else if (response.errorBody() != null) {
+				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
+				statusResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
+			}
+			else {
+				statusResultChannel.send(NetworkResult.Error("Something went wrong"))
+			}
+			_uiState.update { it.copy(isLoading = false) }
+		}
+	}
+
+	fun addIncome(incomeRequest: IncomeRequest) {
+		viewModelScope.launch {
+			_uiState.update { it.copy(isLoading = true) }
+			val response = incomeRepository.addIncome(incomeRequest)
+
+			if (response.isSuccessful && response.body() != null) {
+				statusResultChannel.send(NetworkResult.Success("Income Added"))
 			}
 			else if (response.errorBody() != null) {
 				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())

@@ -2,15 +2,16 @@ package com.example.moneymanager.components.charts
 
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.example.moneymanager.models.Recurrence
-import com.example.moneymanager.ui.theme.Primary
+import com.example.moneymanager.ui.theme.Destructive
 import com.example.moneymanager.ui.theme.SystemGray04
 import com.github.tehras.charts.bar.BarChartData
 import com.github.tehras.charts.bar.renderer.bar.BarDrawer
 
-class BarDrawer(val recurrence: Recurrence): BarDrawer {
+class BarDrawer(val recurrence: Recurrence, val type: String): BarDrawer {
 	private val barPaint = Paint().apply {
 		this.isAntiAlias = true
 	}
@@ -47,7 +48,7 @@ class BarDrawer(val recurrence: Recurrence): BarDrawer {
 			6f,
 			6f,
 			barPaint.apply {
-				color = Primary
+				color = if (type == "Expense") Destructive else	Color.Green
 			}
 		)
 	}

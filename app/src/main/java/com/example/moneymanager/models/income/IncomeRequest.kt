@@ -4,4 +4,5 @@ data class IncomeRequest(
 	var amount: Double,
 	var date: String,
 	var description: String,
+	var categoryId: String,
 )

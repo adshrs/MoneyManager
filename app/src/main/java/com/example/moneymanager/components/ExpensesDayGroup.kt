@@ -51,7 +51,7 @@ fun ExpensesDayGroup(
 						.padding(top = 6.dp)
 						.clickable {
 							expensesViewModel.showDeleteWarning(expense.id)
-							analyticsViewModel.showDeleteWarning(expense.id)
+							analyticsViewModel.showExpenseDeleteWarning(expense.id)
 						}
 				)
 			}
@@ -62,9 +62,15 @@ fun ExpensesDayGroup(
 						id = "",
 						name = "Expense",
 						color = Primary.toString(),
-						userId = ""
+						userId = "",
+						type = "Expense"
 					),
-					modifier = Modifier.padding(top = 6.dp)
+					modifier = Modifier
+						.padding(top = 6.dp)
+						.clickable {
+							expensesViewModel.showDeleteWarning(expense.id)
+							analyticsViewModel.showExpenseDeleteWarning(expense.id)
+						}
 				)
 			}
 		}

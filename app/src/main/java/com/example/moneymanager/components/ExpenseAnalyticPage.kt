@@ -29,26 +29,31 @@ import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.ui.theme.Typography
 import com.example.moneymanager.utils.calculateDateRange
 import com.example.moneymanager.utils.formatDayForRange
-import com.example.moneymanager.viewmodels.AnalyticPageViewModel
+import com.example.moneymanager.viewmodels.ExpenseAnalyticPageViewModel
 import com.example.moneymanager.viewmodels.viewModelFactory
 import java.text.DecimalFormat
 
 @Composable
-fun AnalyticPage(
+fun ExpenseAnalyticPage(
 	innerPadding: PaddingValues,
 	page: Int,
 	recurrence: Recurrence,
 	expenses: List<ExpenseResponse>,
 	categories: List<CategoryResponse>,
-	analyticPageViewModel: AnalyticPageViewModel = viewModel(
+	expenseAnalyticPageViewModel: ExpenseAnalyticPageViewModel = viewModel(
 		key = "$page-${recurrence.name} ",
 		factory = viewModelFactory {
-			AnalyticPageViewModel(page, recurrence, expenses, categories)
+			ExpenseAnalyticPageViewModel(
+				page = page,
+				recurrence = recurrence,
+				expenses = expenses,
+				categories = categories
+			)
 		}
 	)
 ) {
 
-	val uiState by analyticPageViewModel.uiState.collectAsState()
+	val uiState by expenseAnalyticPageViewModel.uiState.collectAsState()
 
 	Column(
 		modifier = Modifier
@@ -62,7 +67,7 @@ fun AnalyticPage(
 			horizontalArrangement = Arrangement.SpaceBetween,
 			modifier = Modifier.fillMaxWidth()
 		) {
-			Column() {
+			Column {
 				Text(
 					text = "${uiState.dateStart.toLocalDate().formatDayForRange()} " +
 							  "- ${uiState.dateEnd.toLocalDate().formatDayForRange()}",
@@ -103,13 +108,14 @@ fun AnalyticPage(
 				.height(223.dp)
 		) {
 			when (recurrence) {
-				Recurrence.Weekly -> WeeklyChart(expens = uiState.filteredExpenses)
+				Recurrence.Weekly -> WeeklyChart(expenses = uiState.filteredExpenses, incomes = null)
 				Recurrence.Monthly ->
 					MonthlyChart(
-						expens = uiState.filteredExpenses,
+						expenses = uiState.filteredExpenses,
+						incomes = null,
 						numberOfDays = calculateDateRange(Recurrence.Monthly, page).daysInRange
 					)
-				Recurrence.Yearly -> YearlyChart(expens = uiState.filteredExpenses)
+				Recurrence.Yearly -> YearlyChart(expenses = uiState.filteredExpenses, incomes = null)
 				else -> Unit
 			}
 		}

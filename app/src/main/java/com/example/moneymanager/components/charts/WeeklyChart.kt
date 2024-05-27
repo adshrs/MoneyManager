@@ -7,9 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.moneymanager.models.expense.ExpenseResponse
 import com.example.moneymanager.models.Recurrence
+import com.example.moneymanager.models.expense.ExpenseResponse
 import com.example.moneymanager.models.expense.groupByDayOfWeek
+import com.example.moneymanager.models.income.IncomeResponse
+import com.example.moneymanager.models.income.groupByDayOfWeek
 import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.utils.simplifyNumber
 import com.github.tehras.charts.bar.BarChart
@@ -19,45 +21,70 @@ import com.github.tehras.charts.bar.renderer.yaxis.SimpleYAxisDrawer
 import java.time.DayOfWeek
 
 @Composable
-fun WeeklyChart(expens: List<ExpenseResponse>) {
-	val groupedExpenses = expens.groupByDayOfWeek()
+fun WeeklyChart(expenses: List<ExpenseResponse>?, incomes: List<IncomeResponse>?) {
+	val groupedExpenses = expenses?.groupByDayOfWeek()
+	val groupedIncomes = incomes?.groupByDayOfWeek()
+
+	val containsGroupedExpenses = !groupedExpenses.isNullOrEmpty()
 
 	BarChart(
 		barChartData = BarChartData(
 			bars = listOf(
 				Bar(
-					label = DayOfWeek.SUNDAY.name.substring(0,3),
-					value = groupedExpenses[DayOfWeek.SUNDAY.name]?.total?.toFloat() ?: 0f,
+					label = DayOfWeek.SUNDAY.name.substring(0, 3),
+					value =
+					if (containsGroupedExpenses)
+						groupedExpenses?.get(DayOfWeek.SUNDAY.name)?.total?.toFloat()?: 0f
+					else
+						groupedIncomes?.get(DayOfWeek.SUNDAY.name)?.total?.toFloat() ?: 0f,
 					color = Color.White
 				),
 				Bar(
-					label = DayOfWeek.MONDAY.name.substring(0,3),
-					value = groupedExpenses[DayOfWeek.MONDAY.name]?.total?.toFloat() ?: 0f,
+					label = DayOfWeek.MONDAY.name.substring(0, 3),
+					value = if (containsGroupedExpenses)
+						groupedExpenses?.get(DayOfWeek.MONDAY.name)?.total?.toFloat()?: 0f
+					else
+						groupedIncomes?.get(DayOfWeek.MONDAY.name)?.total?.toFloat()?: 0f,
 					color = Color.White
 				),
 				Bar(
-					label = DayOfWeek.TUESDAY.name.substring(0,3),
-					value = groupedExpenses[DayOfWeek.TUESDAY.name]?.total?.toFloat() ?: 0f,
+					label = DayOfWeek.TUESDAY.name.substring(0, 3),
+					value = if (containsGroupedExpenses)
+						groupedExpenses?.get(DayOfWeek.TUESDAY.name)?.total?.toFloat()?: 0f
+					else
+						groupedIncomes?.get(DayOfWeek.TUESDAY.name)?.total?.toFloat()?: 0f,
 					color = Color.White
 				),
 				Bar(
-					label = DayOfWeek.WEDNESDAY.name.substring(0,3),
-					value = groupedExpenses[DayOfWeek.WEDNESDAY.name]?.total?.toFloat() ?: 0f,
+					label = DayOfWeek.WEDNESDAY.name.substring(0, 3),
+					value = if (containsGroupedExpenses)
+						groupedExpenses?.get(DayOfWeek.WEDNESDAY.name)?.total?.toFloat()?: 0f
+					else
+						groupedIncomes?.get(DayOfWeek.WEDNESDAY.name)?.total?.toFloat()?: 0f,
 					color = Color.White
 				),
 				Bar(
-					label = DayOfWeek.THURSDAY.name.substring(0,3),
-					value = groupedExpenses[DayOfWeek.THURSDAY.name]?.total?.toFloat() ?: 0f,
+					label = DayOfWeek.THURSDAY.name.substring(0, 3),
+					value = if (containsGroupedExpenses)
+						groupedExpenses?.get(DayOfWeek.THURSDAY.name)?.total?.toFloat()?: 0f
+					else
+						groupedIncomes?.get(DayOfWeek.THURSDAY.name)?.total?.toFloat()?: 0f,
 					color = Color.White
 				),
 				Bar(
-					label = DayOfWeek.FRIDAY.name.substring(0,3),
-					value = groupedExpenses[DayOfWeek.FRIDAY.name]?.total?.toFloat() ?: 0f,
+					label = DayOfWeek.FRIDAY.name.substring(0, 3),
+					value = if (containsGroupedExpenses)
+						groupedExpenses?.get(DayOfWeek.FRIDAY.name)?.total?.toFloat()?: 0f
+					else
+						groupedIncomes?.get(DayOfWeek.FRIDAY.name)?.total?.toFloat()?: 0f,
 					color = Color.White
 				),
 				Bar(
-					label = DayOfWeek.SATURDAY.name.substring(0,3),
-					value = groupedExpenses[DayOfWeek.SATURDAY.name]?.total?.toFloat() ?: 0f,
+					label = DayOfWeek.SATURDAY.name.substring(0, 3),
+					value = if (containsGroupedExpenses)
+						groupedExpenses?.get(DayOfWeek.SATURDAY.name)?.total?.toFloat()?: 0f
+					else
+						groupedIncomes?.get(DayOfWeek.SATURDAY.name)?.total?.toFloat()?: 0f,
 					color = Color.White
 				),
 			)
@@ -68,7 +95,11 @@ fun WeeklyChart(expens: List<ExpenseResponse>) {
 			labelValueFormatter = ::simplifyNumber,
 			labelTextSize = 12.sp
 		),
-		barDrawer = BarDrawer(recurrence = Recurrence.Weekly),
+		barDrawer =
+		if (containsGroupedExpenses)
+			BarDrawer(recurrence = Recurrence.Weekly, type = "Expense")
+		else
+			BarDrawer(recurrence = Recurrence.Weekly, type = "Income"),
 		modifier = Modifier
 			.fillMaxSize()
 			.padding(top = 25.dp, bottom = 45.dp)

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moneymanager.models.Recurrence
 import com.example.moneymanager.models.category.CategoryResponse
-import com.example.moneymanager.models.expense.ExpenseResponse
+import com.example.moneymanager.models.income.IncomeResponse
 import com.example.moneymanager.utils.calculateDateRange
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,55 +17,53 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-data class AnalyticPageState(
-	var expenses: List<ExpenseResponse> = listOf(),
+data class IncomeAnalyticPageState(
+	var incomes: List<IncomeResponse> = listOf(),
 	var categories: List<CategoryResponse> = listOf(),
-	var filteredExpenses: List<ExpenseResponse> = listOf(),
+	var filteredIncomes: List<IncomeResponse> = listOf(),
 	val dateStart: LocalDateTime = LocalDateTime.now(),
 	val dateEnd: LocalDateTime = LocalDateTime.now(),
 	val avgPerDay: Double = 0.0,
 	val totalForDateRange: Double = 0.0
 )
 
-class AnalyticPageViewModel(
+class IncomeAnalyticPageViewModel(
 	private val page: Int,
 	val recurrence: Recurrence,
-	val expenses: List<ExpenseResponse>,
+	val incomes: List<IncomeResponse>,
 	val categories: List<CategoryResponse>
 ) : ViewModel() {
-	private val _uiState = MutableStateFlow(AnalyticPageState())
-	val uiState: StateFlow<AnalyticPageState> = _uiState.asStateFlow()
+	private val _uiState = MutableStateFlow(IncomeAnalyticPageState())
+	val uiState: StateFlow<IncomeAnalyticPageState> = _uiState.asStateFlow()
 
 	init {
-		if (expenses.isNotEmpty() && categories.isNotEmpty()) {
+		if (incomes.isNotEmpty() && categories.isNotEmpty()) {
 			_uiState.update {
 				it.copy(
 					categories = categories,
-					expenses = expenses
+					incomes = incomes
 				)
 			}
 
 			viewModelScope.launch(Dispatchers.IO) {
 				val (start, end, daysInRange) = calculateDateRange(recurrence, page)
 
-				val filteredExpenses = uiState.value.expenses.filter {
+				val filteredIncomes = uiState.value.incomes.filter {
 					val date = LocalDate.parse(it.date, DateTimeFormatter.ISO_DATE)
-					(date.isAfter(start) && date.isBefore(end)) || date.isEqual(start) || date.isEqual(
-						end
-					)
+					(date.isAfter(start) && date.isBefore(end)) || date.isEqual(start) || date.isEqual(end)
 				}
 
-				val totalExpensesAmount = filteredExpenses.sumOf { it.amount }
-				val avgPerDay: Double = totalExpensesAmount / daysInRange
+				val totalIncomesAmount = filteredIncomes.sumOf { it.amount }
+				val avgPerDay: Double = totalIncomesAmount / daysInRange
 
 				viewModelScope.launch(Dispatchers.Main) {
 					_uiState.update {
 						it.copy(
 							dateStart = LocalDateTime.of(start, LocalTime.MIN),
 							dateEnd = LocalDateTime.of(end, LocalTime.MAX),
-							filteredExpenses = filteredExpenses,
+							filteredIncomes = filteredIncomes,
 							avgPerDay = avgPerDay,
-							totalForDateRange = totalExpensesAmount
+							totalForDateRange = totalIncomesAmount
 						)
 					}
 				}

@@ -78,6 +78,7 @@ class SignUpViewModel @Inject constructor(
 	}
 
 	fun registerUser() {
+		_uiState.value.errorText = ""
 		viewModelScope.launch {
 			val validationResult = validateUserInput()
 

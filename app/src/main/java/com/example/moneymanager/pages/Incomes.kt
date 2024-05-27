@@ -131,8 +131,8 @@ fun Incomes(
 		incomesViewModel.statusNetworkResults.collect { result ->
 			when (result) {
 				is NetworkResult.Success -> {
-					navController.navigate("home/incomes") {
-						popUpTo("home/incomes") {
+					navController.navigate("home") {
+						popUpTo("home") {
 							inclusive = true
 						}
 					}

@@ -12,6 +12,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -25,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.moneymanager.pages.Account
 import com.example.moneymanager.pages.Add
 import com.example.moneymanager.pages.AddCategory
 import com.example.moneymanager.pages.Analytics
@@ -92,10 +95,12 @@ private fun MoneyManager(
 			if (showBottomBar) {
 				NavigationBar(
 					containerColor = TopAppBarBackground,
-					modifier = Modifier.height(70.dp)
+					modifier = Modifier
+						.height(70.dp)
+						.clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
 				) {
 					NavigationBarItem(
-						selected = backStackEntry?.destination?.route?.startsWith("home/expenses")
+						selected = backStackEntry?.destination?.route?.startsWith("home")
 							?: false,
 						onClick = { navController.navigate("home") },
 						icon = {
@@ -164,19 +169,19 @@ private fun MoneyManager(
 						)
 					)
 					NavigationBarItem(
-						selected = backStackEntry?.destination?.route?.startsWith("budgets&goals")
+						selected = backStackEntry?.destination?.route?.startsWith("categories")
 							?: false,
-						onClick = { navController.navigate("budgets&goals") },
+						onClick = { navController.navigate("categories") },
 						icon = {
-							if (backStackEntry?.destination?.route == "budgets&goals") {
+							if (backStackEntry?.destination?.route == "categories") {
 								Icon(
-									painterResource(id = R.drawable.icon_navbar_budgetsandgoals_selected),
-									contentDescription = "Settings"
+									painterResource(id = R.drawable.icon_navbar_categories_selected),
+									contentDescription = "categories selected"
 								)
 							} else {
 								Icon(
-									painterResource(id = R.drawable.icon_navbar_budgetsandgoals),
-									contentDescription = "Settings"
+									painterResource(id = R.drawable.icon_navabar_categories),
+									contentDescription = "categories"
 								)
 							}
 						},
@@ -263,33 +268,6 @@ private fun MoneyManager(
 						Add(navController = navController)
 					}
 				}
-				composable("budgets&goals") {
-					Surface(
-						modifier = Modifier
-							.fillMaxSize()
-							.padding(bottom = 55.dp)
-					) {
-						Greeting("Budgets & Goals")
-					}
-				}
-				composable("budgets&goals/budgets") {
-					Surface(
-						modifier = Modifier
-							.fillMaxSize()
-							.padding(bottom = 55.dp)
-					) {
-						Greeting("Budgets")
-					}
-				}
-				composable("budgets&goals/goals") {
-					Surface(
-						modifier = Modifier
-							.fillMaxSize()
-							.padding(bottom = 55.dp)
-					) {
-						Greeting("Goals")
-					}
-				}
 				composable("menu") {
 					Surface(
 						modifier = Modifier
@@ -305,10 +283,10 @@ private fun MoneyManager(
 							.fillMaxSize()
 							.padding(bottom = 55.dp)
 					) {
-						Greeting("Account")
+						Account(navController = navController)
 					}
 				}
-				composable("menu/categories") {
+				composable("categories") {
 					Surface(
 						modifier = Modifier
 							.fillMaxSize()
@@ -317,7 +295,7 @@ private fun MoneyManager(
 						Categories(navController = navController)
 					}
 				}
-				composable("menu/categories/addcategory") {
+				composable("categories/addcategory") {
 					Surface(
 						modifier = Modifier
 							.fillMaxSize()

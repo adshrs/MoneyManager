@@ -16,6 +16,7 @@ val mockIncomes: List<IncomeResponse> = List(30) { index ->
 			ChronoUnit.DAYS
 		).toString(),
 		description = faker.australia.animals(),
+		categoryId = "",
 		userId = ""
 	)
 }

@@ -83,8 +83,11 @@ dependencies {
 	implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
 	//JWT
-	implementation ("io.jsonwebtoken:jjwt-api:0.12.5")
-	implementation ("io.jsonwebtoken:jjwt-impl:0.12.5")
+	implementation("io.jsonwebtoken:jjwt-api:0.12.5")
+	implementation("io.jsonwebtoken:jjwt-impl:0.12.5")
+
+	//PDF GENERATION
+	implementation("com.itextpdf:itext7-core:7.1.15")
 
 	// Test
 	testImplementation("junit:junit:4.13.2")

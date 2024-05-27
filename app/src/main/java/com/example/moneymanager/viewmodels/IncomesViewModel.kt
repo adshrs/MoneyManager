@@ -2,7 +2,6 @@ package com.example.moneymanager.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.moneymanager.components.incomesList.mockIncomes
 import com.example.moneymanager.models.Recurrence
 import com.example.moneymanager.models.category.CategoryResponse
 import com.example.moneymanager.models.income.IncomeResponse
@@ -30,7 +29,7 @@ data class IncomesScreenState(
 	val recurrence: Recurrence = Recurrence.Daily,
 	val sumTotal: Double = 0.0,
 	var recurrenceMenuOpened: Boolean = false,
-	var incomes: List<IncomeResponse> = mockIncomes,
+	var incomes: List<IncomeResponse> = listOf(),
 	var filteredIncomes: List<IncomeResponse> = listOf(),
 	var categories: List<CategoryResponse> = listOf(),
 	var isLoading: Boolean = false
@@ -93,7 +92,7 @@ class IncomesViewModel @Inject constructor(
 			_uiState.update { it.copy(isLoading = true) }
 			val (start, end) = calculateDateRange(recurrence, 0)
 
-			val filteredIncomes = mockIncomes.filter {
+			val filteredIncomes = _uiState.value.incomes.filter {
 				val date = LocalDate.parse(it.date, DateTimeFormatter.ISO_DATE)
 				(date.isAfter(start) && date.isBefore(end)) || date.isEqual(start) || date.isEqual(end)
 			}
@@ -131,7 +130,7 @@ class IncomesViewModel @Inject constructor(
 	private fun getCategories() {
 		viewModelScope.launch {
 			_uiState.update { it.copy(isLoading = true) }
-			val response = categoryRepository.getCategories()
+			val response = categoryRepository.getCategories("Income")
 
 			if (response.isSuccessful && response.body() != null) {
 				categoryResultChannel.send(NetworkResult.Success(response.body()!!))
@@ -169,7 +168,7 @@ class IncomesViewModel @Inject constructor(
 	fun deleteIncome(incomeId: String) {
 		viewModelScope.launch {
 			_uiState.update { it.copy(isLoading = true) }
-			val response = incomeRepository.deleteIncomes(incomeId)
+			val response = incomeRepository.deleteIncome(incomeId)
 			if (response.isSuccessful) {
 				statusResultChannel.send(NetworkResult.Success("Income Deleted"))
 			}

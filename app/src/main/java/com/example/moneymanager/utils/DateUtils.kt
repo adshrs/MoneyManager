@@ -5,6 +5,8 @@ import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.time.temporal.WeekFields
+import java.util.Locale
 
 fun LocalDate.formatDay(): String {
 	val today = LocalDate.now()
@@ -50,7 +52,7 @@ fun calculateDateRange(recurrence: Recurrence, page: Int): DateRangeData {
 			start =
 				LocalDate
 					.now()
-					.minusDays(today.dayOfWeek.value.toLong())
+					.minusDays(today.get(WeekFields.of(Locale.getDefault()).dayOfWeek()).toLong() - 1)
 					.minusDays((page * 7).toLong())
 			end = start.plusDays(6)
 			daysInRange = 7

@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.moneymanager.ui.theme.Secondary
 
 @Composable
 fun PasswordTextField(
@@ -28,7 +30,11 @@ fun PasswordTextField(
 			.padding(horizontal = 16.dp, vertical = 8.dp)
 			.fillMaxWidth(),
 		keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-		shape = RoundedCornerShape(10.dp),
+		shape = RoundedCornerShape(20.dp),
+		colors = OutlinedTextFieldDefaults.colors(
+			unfocusedBorderColor = Secondary,
+			focusedBorderColor = Secondary
+		),
 		trailingIcon = trailingIcon,
 		visualTransformation = visualTransformation,
 		singleLine = true

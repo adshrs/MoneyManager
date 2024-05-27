@@ -12,11 +12,11 @@ class IncomeRepository @Inject constructor(private val incomeApi: IncomeApi) {
 		return incomeApi.getIncomes()
 	}
 
-	suspend fun addIncomes(incomeRequest: IncomeRequest): Response<IncomeResponse> {
+	suspend fun addIncome(incomeRequest: IncomeRequest): Response<IncomeResponse> {
 		return incomeApi.addIncome(incomeRequest)
 	}
 
-	suspend fun deleteIncomes(incomeId: String): Response<Unit> {
+	suspend fun deleteIncome(incomeId: String): Response<Unit> {
 		return incomeApi.deleteIncome(incomeId)
 	}
 }

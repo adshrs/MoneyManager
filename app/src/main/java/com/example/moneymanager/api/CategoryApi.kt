@@ -12,8 +12,8 @@ import retrofit2.http.Path
 
 interface CategoryApi {
 
-	@GET("/api/category")
-	suspend fun getCategories(): Response<List<CategoryResponse>>
+	@GET("/api/category/{type}")
+	suspend fun getCategories(@Path("type") type: String): Response<List<CategoryResponse>>
 
 	@POST("/api/category")
 	suspend fun addCategory(@Body categoryRequest: CategoryRequest): Response<CategoryResponse>

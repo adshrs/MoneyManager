@@ -198,7 +198,7 @@ fun SignIn(
 								.padding(top = 48.dp, bottom = 32.dp)
 								.fillMaxWidth()
 								.height(50.dp),
-							shape = RoundedCornerShape(10.dp),
+							shape = RoundedCornerShape(20.dp),
 							colors = ButtonColors(
 								containerColor = Secondary,
 								contentColor = Color.Black,

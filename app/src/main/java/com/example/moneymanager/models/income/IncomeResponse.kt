@@ -8,6 +8,7 @@ data class IncomeResponse(
 	var amount: Double,
 	var date: String,
 	var description: String,
+	var categoryId: String,
 	val userId: String
 )
 

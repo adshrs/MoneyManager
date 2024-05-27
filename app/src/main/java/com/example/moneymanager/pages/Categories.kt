@@ -6,8 +6,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,29 +25,31 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -62,15 +62,15 @@ import com.example.moneymanager.ui.theme.BackgroundElevated
 import com.example.moneymanager.ui.theme.Button
 import com.example.moneymanager.ui.theme.Destructive
 import com.example.moneymanager.ui.theme.DividerColor
+import com.example.moneymanager.ui.theme.FillTertiary
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
-import com.example.moneymanager.ui.theme.Primary
+import com.example.moneymanager.ui.theme.SystemGray04
 import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.ui.theme.TopAppBarBackground
 import com.example.moneymanager.ui.theme.Typography
 import com.example.moneymanager.utils.NetworkResult
 import com.example.moneymanager.utils.parseColorString
 import com.example.moneymanager.viewmodels.CategoriesViewModel
-import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -83,14 +83,37 @@ fun Categories(
 	val uiState by categoriesViewModel.uiState.collectAsState()
 	val context = LocalContext.current
 
-	val colorPickerController = rememberColorPickerController()
-	val keyboardController = LocalSoftwareKeyboardController.current
-
 	LaunchedEffect(categoriesViewModel, context) {
-		categoriesViewModel.categoryNetworkResults.collect { result ->
+		categoriesViewModel.expenseCategoryNetworkResults.collect { result ->
 			when (result) {
 				is NetworkResult.Success -> {
-					categoriesViewModel.updateCategories(result.data!!)
+					categoriesViewModel.updateExpenseCategories(result.data!!)
+				}
+
+				is NetworkResult.Error -> {
+					if (result.message!!.startsWith("JWT expired")) {
+						categoriesViewModel.removeToken()
+						navController.navigate("signin")
+						Toast.makeText(context, "Session Expired, sign in again", Toast.LENGTH_SHORT)
+							.show()
+					} else if (result.message.startsWith("Invalid compact JWT string")) {
+						navController.navigate("signin")
+					} else {
+						Toast.makeText(context, result.message.toString(), Toast.LENGTH_SHORT)
+							.show()
+					}
+				}
+
+				is NetworkResult.Loading -> {}
+			}
+		}
+	}
+
+	LaunchedEffect(categoriesViewModel, context) {
+		categoriesViewModel.incomeCategoryNetworkResults.collect { result ->
+			when (result) {
+				is NetworkResult.Success -> {
+					categoriesViewModel.updateIncomeCategories(result.data!!)
 				}
 
 				is NetworkResult.Error -> {
@@ -116,8 +139,8 @@ fun Categories(
 		categoriesViewModel.statusNetworkResults.collect { result ->
 			when (result) {
 				is NetworkResult.Success -> {
-					navController.navigate("menu/categories") {
-						popUpTo("menu/categories") {
+					navController.navigate("categories") {
+						popUpTo("categories") {
 							inclusive = true
 						}
 					}
@@ -143,54 +166,112 @@ fun Categories(
 
 	Scaffold(
 		topBar = {
-			MediumTopAppBar(
-				title = { Text(text = "Categories", style = Typography.titleMedium) },
+			TopAppBar(
+				title = {
+					Row(verticalAlignment = Alignment.CenterVertically) {
+						Icon(
+							painterResource(id = R.drawable.icon_navbar_categories_selected),
+							contentDescription = "categories"
+						)
+						Spacer(modifier = Modifier.width(8.dp))
+						Text(text = "Categories", style = Typography.titleMedium)
+					}
+				},
 				colors = TopAppBarDefaults.mediumTopAppBarColors(
 					containerColor = TopAppBarBackground
 				),
-				navigationIcon = {
+				actions = {
+					var typeMenuOpened by remember {
+						mutableStateOf(false)
+					}
+
 					Surface(
-						color = Color.Transparent,
-						modifier = Modifier
-							.padding(8.dp)
-							.clickable(
-								indication = null,
-								interactionSource = remember { MutableInteractionSource() }
-							) {
-								navController.popBackStack()
-							}
+						modifier = Modifier.padding(horizontal = 16.dp),
+						shape = RoundedCornerShape(6.dp),
+						color = FillTertiary,
+						onClick = { typeMenuOpened = true },
 					) {
 						Row(
-							modifier = Modifier.padding(vertical = 10.dp),
-
-							) {
-							Icon(
-								Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
-								contentDescription = "Menu"
+							modifier = Modifier
+								.padding(
+									start = 10.dp,
+									end = 7.dp,
+									top = 8.dp,
+									bottom = 8.dp
+								)
+								.width(90.dp),
+							verticalAlignment = Alignment.CenterVertically,
+							horizontalArrangement = Arrangement.SpaceEvenly
+						) {
+							Text(
+								text = uiState.dropdownSelection,
+								style = Typography.bodySmall,
+								modifier = Modifier.weight(1f)
 							)
-							Text(text = "Menu", textAlign = TextAlign.Center)
+							Icon(
+								painterResource(id = R.drawable.icon_unfold_more),
+								contentDescription = "Open picker",
+								modifier = Modifier.padding(start = 6.dp),
+								tint = TextSecondary
+							)
+						}
+						DropdownMenu(
+							expanded = typeMenuOpened,
+							onDismissRequest = { typeMenuOpened = false },
+							modifier = Modifier
+								.background(
+									color = com.example.moneymanager.ui.theme.Surface,
+									shape = RoundedCornerShape(4.dp)
+								)
+								.border(1.dp, SystemGray04, RoundedCornerShape(4.dp))
+						) {
+							DropdownMenuItem(
+								text = { Text(text = "Expense") },
+								onClick = {
+									categoriesViewModel.setDropdownSelection("Expense")
+									typeMenuOpened = false
+								}
+							)
+							DropdownMenuItem(
+								text = { Text(text = "Income") },
+								onClick = {
+									categoriesViewModel.setDropdownSelection("Income")
+									typeMenuOpened = false
+								}
+							)
 						}
 					}
-				}
+				},
+				modifier = Modifier.clip(RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp))
 			)
 		},
-		bottomBar = {
+		floatingActionButton = {
 			Row(
 				modifier = Modifier
-					.fillMaxWidth()
-					.height(80.dp)
-					.background(Color.Transparent),
-				verticalAlignment = Alignment.Top,
-				horizontalArrangement = Arrangement.Center
+					.padding(bottom = 55.dp)
 			) {
 				ExtendedFloatingActionButton(
 					onClick = {
-						navController.navigate("menu/categories/addcategory")
+						navController.navigate("categories/addcategory")
 					},
 					modifier = Modifier
 						.height(50.dp)
-						.border(4.dp, Primary, RoundedCornerShape(100f)),
-					shape = RoundedCornerShape(100f),
+						.border(
+							4.dp,
+							Color.Gray,
+							RoundedCornerShape(
+								topStart = 20.dp,
+								topEnd = 20.dp,
+								bottomStart = 20.dp,
+								bottomEnd = 5.dp
+							)
+						),
+					shape = RoundedCornerShape(
+						topStart = 20.dp,
+						topEnd = 20.dp,
+						bottomStart = 20.dp,
+						bottomEnd = 5.dp
+					),
 					containerColor = Button,
 					contentColor = Color.Black
 				) {
@@ -208,23 +289,53 @@ fun Categories(
 				Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 					LoadingIndicator()
 				}
+			}
+
+			if (uiState.dropdownSelection == "Expense" && uiState.expenseCategories.isEmpty()) {
+				Column(
+					modifier = Modifier.fillMaxSize(),
+					horizontalAlignment = Alignment.CenterHorizontally,
+					verticalArrangement = Arrangement.Center
+				) {
+					Text(text = "No categories.")
+					Text(text = "Click the '+ New' button to add a expense")
+					Text(text = "category.")
+				}
+			}
+
+			if (uiState.dropdownSelection == "Income" && uiState.incomeCategories.isEmpty()) {
+				Column(
+					modifier = Modifier.fillMaxSize(),
+					horizontalAlignment = Alignment.CenterHorizontally,
+					verticalArrangement = Arrangement.Center
+				) {
+					Text(text = "No categories.")
+					Text(text = "Click the '+ New' button to add a income")
+					Text(text = "category.")
+				}
 			} else {
 				Column(
 					modifier = Modifier
 						.padding(innerPadding)
-						.fillMaxHeight(),
+						.fillMaxHeight()
+						.padding(top = 16.dp, bottom = 55.dp),
 					verticalArrangement = Arrangement.Top
 				) {
+					val items = when (uiState.dropdownSelection) {
+						"Expense" -> uiState.expenseCategories
+						"Income" -> uiState.incomeCategories
+						else -> null
+					}
 
 					AnimatedVisibility(visible = true) {
 						LazyColumn(
 							modifier = Modifier
-								.padding(horizontal = 8.dp, vertical = 16.dp)
+								.padding(horizontal = 8.dp)
 								.clip(RoundedCornerShape(8.dp))
 								.fillMaxWidth()
 						) {
 							itemsIndexed(
-								uiState.categories,
+								items = items!!,
 								key = { _, category -> category.id }
 							) { index, category ->
 								SwipeableActionsBox(
@@ -280,7 +391,7 @@ fun Categories(
 										}
 									}
 								}
-								if (index < uiState.categories.size - 1) {
+								if (uiState.dropdownSelection == "Expense" && index < uiState.expenseCategories.size - 1) {
 									Row(
 										modifier = Modifier
 											.background(BackgroundElevated)
@@ -289,6 +400,16 @@ fun Categories(
 										HorizontalDivider(thickness = 1.dp, color = DividerColor)
 									}
 								}
+								if (uiState.dropdownSelection == "Income" && index < uiState.incomeCategories.size - 1) {
+									Row(
+										modifier = Modifier
+											.background(BackgroundElevated)
+											.height(1.dp)
+									) {
+										HorizontalDivider(thickness = 1.dp, color = DividerColor)
+									}
+								}
+
 							}
 						}
 					}
@@ -318,8 +439,13 @@ fun Categories(
 						title = { Text(text = "Remove Permanently?", style = Typography.headlineLarge) },
 						text = {
 							Text(
-								text = "After deleting this category, all existing expenses that belongs " +
-										  "to this category will be tagged with a default category 'expense'.",
+								text =
+								if (uiState.dropdownSelection == "Expense")
+									"After deleting this category, all existing expenses that belongs " +
+											  "to this category will be tagged with a default category 'expense'."
+								else
+									"After deleting this category, all existing incomes that belongs " +
+											  "to this category will be tagged with a default category 'income'.",
 								style = Typography.labelMedium
 							)
 						},

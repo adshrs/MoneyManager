@@ -1,5 +1,6 @@
 package com.example.moneymanager.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moneymanager.models.Recurrence
@@ -130,13 +131,14 @@ class ExpensesViewModel @Inject constructor(
 	private fun getCategories() {
 		viewModelScope.launch {
 			_uiState.update { it.copy(isLoading = true) }
-			val response = categoryRepository.getCategories()
+			val response = categoryRepository.getCategories("Expense")
 
 			if (response.isSuccessful && response.body() != null) {
 				categoryResultChannel.send(NetworkResult.Success(response.body()!!))
 			}
 			else if (response.errorBody() != null) {
 				val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
+				Log.e("MONEYMANAGERTAG", errorObj.toString())
 				categoryResultChannel.send(NetworkResult.Error(errorObj.getString("message")))
 			}
 			else {

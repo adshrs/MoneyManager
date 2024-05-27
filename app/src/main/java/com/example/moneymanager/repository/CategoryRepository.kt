@@ -1,6 +1,5 @@
 package com.example.moneymanager.repository
 
-import android.util.Log
 import com.example.moneymanager.api.CategoryApi
 import com.example.moneymanager.models.category.CategoryRequest
 import com.example.moneymanager.models.category.CategoryResponse
@@ -9,13 +8,11 @@ import javax.inject.Inject
 
 class CategoryRepository @Inject constructor(private val categoryApi: CategoryApi) {
 
-	suspend fun getCategories(): Response<List<CategoryResponse>> {
-		Log.d("MONEYMANAGERTAG", "CategoryRepository.getCategories")
-		return categoryApi.getCategories()
+	suspend fun getCategories(type: String): Response<List<CategoryResponse>> {
+		return categoryApi.getCategories(type)
 	}
 
 	suspend fun addCategory(categoryRequest: CategoryRequest): Response<CategoryResponse> {
-		Log.d("MONEYMANAGERTAG", "CategoryRepository.addCategory")
 		return categoryApi.addCategory(categoryRequest)
 	}
 

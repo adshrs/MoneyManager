@@ -22,6 +22,7 @@ import javax.inject.Inject
 data class AddCategoryScreenState(
 	val newCategoryColor: Color = Primary,
 	val newCategoryName: String = "",
+	val newCategoryType: String = "Expense",
 	var userId: String = "",
 )
 
@@ -38,6 +39,14 @@ class AddCategoryViewModel @Inject constructor(
 
 	@Inject
 	lateinit var tokenManager: TokenManager
+
+	fun setNewCategoryType(selected: String) {
+		_uiState.update {
+			it.copy(
+				newCategoryType = selected
+			)
+		}
+	}
 
 	fun setNewCategoryColor(color: Color) {
 		_uiState.update {

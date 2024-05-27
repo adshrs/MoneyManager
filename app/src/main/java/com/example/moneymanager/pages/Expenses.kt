@@ -59,6 +59,7 @@ fun Expenses(
 	navController: NavController,
 	expensesViewModel: ExpensesViewModel = hiltViewModel()
 ) {
+
 	val uiState by expensesViewModel.uiState.collectAsState()
 	val expensesDayGroupUiState by expensesViewModel.expensesDayGroupUiState.collectAsState()
 	val context = LocalContext.current
@@ -131,8 +132,8 @@ fun Expenses(
 		expensesViewModel.statusNetworkResults.collect { result ->
 			when (result) {
 				is NetworkResult.Success -> {
-					navController.navigate("home/expenses") {
-						popUpTo("home/expenses") {
+					navController.navigate("home") {
+						popUpTo("home") {
 							inclusive = true
 						}
 					}

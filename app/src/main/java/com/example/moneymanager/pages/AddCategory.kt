@@ -2,23 +2,29 @@ package com.example.moneymanager.pages
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MediumTopAppBar
@@ -30,24 +36,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.moneymanager.R
 import com.example.moneymanager.components.textFields.UnstyledTextField
 import com.example.moneymanager.models.category.CategoryRequest
 import com.example.moneymanager.ui.theme.BackgroundElevated
 import com.example.moneymanager.ui.theme.DisabledButton
 import com.example.moneymanager.ui.theme.MoneyManagerTheme
 import com.example.moneymanager.ui.theme.Primary
+import com.example.moneymanager.ui.theme.SystemGray04
+import com.example.moneymanager.ui.theme.TextSecondary
 import com.example.moneymanager.ui.theme.TopAppBarBackground
 import com.example.moneymanager.ui.theme.Typography
 import com.example.moneymanager.utils.NetworkResult
@@ -75,8 +88,8 @@ fun AddCategory(
 				is NetworkResult.Success -> {
 					Toast.makeText(context, result.data, Toast.LENGTH_SHORT)
 						.show()
-					navController.navigate("menu/categories") {
-						popUpTo("menu/categories") {
+					navController.navigate("categories") {
+						popUpTo("categories") {
 							inclusive = true
 						}
 					}
@@ -88,11 +101,9 @@ fun AddCategory(
 						navController.navigate("signin")
 						Toast.makeText(context, "Session Expired, sign in again", Toast.LENGTH_SHORT)
 							.show()
-					}
-					else if (result.message.startsWith("Invalid compact JWT string")) {
+					} else if (result.message.startsWith("Invalid compact JWT string")) {
 						navController.navigate("signin")
-					}
-					else {
+					} else {
 						Toast.makeText(context, result.message.toString(), Toast.LENGTH_SHORT)
 							.show()
 					}
@@ -106,7 +117,20 @@ fun AddCategory(
 	Scaffold(
 		topBar = {
 			MediumTopAppBar(
-				title = { Text(text = "Add Category", style = Typography.titleMedium) },
+				title = {
+					Row(verticalAlignment = Alignment.CenterVertically) {
+						Icon(
+							Icons.Filled.Add,
+							contentDescription = "add category"
+						)
+						Icon(
+							painterResource(id = R.drawable.icon_navbar_categories_selected),
+							contentDescription = "add category"
+						)
+						Spacer(modifier = Modifier.width(8.dp))
+						Text(text = "Add Category", style = Typography.titleMedium)
+					}
+				},
 				colors = TopAppBarDefaults.mediumTopAppBarColors(
 					containerColor = TopAppBarBackground
 				),
@@ -133,7 +157,8 @@ fun AddCategory(
 							Text(text = "Categories", textAlign = TextAlign.Center)
 						}
 					}
-				}
+				},
+				modifier = Modifier.clip(RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp))
 			)
 		},
 		content = { innerPadding ->
@@ -146,7 +171,7 @@ fun AddCategory(
 			) {
 				Row(
 					modifier = Modifier
-						.padding(bottom = 16.dp)
+						.padding(bottom = 9.dp)
 						.fillMaxWidth(),
 					verticalAlignment = Alignment.CenterVertically
 				) {
@@ -157,15 +182,15 @@ fun AddCategory(
 								CategoryRequest(
 									uiState.newCategoryName,
 									uiState.newCategoryColor.toString(),
-									uiState.userId
+									uiState.newCategoryType
 								)
 							)
 						},
 						modifier = Modifier
 							.fillMaxWidth()
 							.height(50.dp)
-							.border(5.dp, uiState.newCategoryColor, RoundedCornerShape(100f)),
-						shape = RoundedCornerShape(100f),
+							.border(5.dp, Color.Gray, RoundedCornerShape(20.dp)),
+						shape = RoundedCornerShape(20.dp),
 						colors = ButtonColors(
 							containerColor = com.example.moneymanager.ui.theme.Button,
 							contentColor = Color.Black,
@@ -176,6 +201,77 @@ fun AddCategory(
 						Text(text = "Create")
 					}
 				}
+
+				Row(
+					modifier = Modifier
+						.padding(bottom = 9.dp)
+						.fillMaxWidth(),
+					verticalAlignment = Alignment.CenterVertically
+				) {
+					var typeMenuOpened by remember {
+						mutableStateOf(false)
+					}
+
+					Surface(
+						modifier = Modifier,
+						shape = RoundedCornerShape(6.dp),
+						color = BackgroundElevated,
+						onClick = { typeMenuOpened = true },
+					) {
+						Row(
+							modifier = Modifier
+								.padding(
+									start = 10.dp,
+									end = 7.dp,
+									top = 8.dp,
+									bottom = 8.dp
+								)
+								.fillMaxWidth(),
+							verticalAlignment = Alignment.CenterVertically,
+							horizontalArrangement = Arrangement.SpaceEvenly
+						) {
+							Text(
+								text = uiState.newCategoryType,
+								style = Typography.bodySmall,
+								modifier = Modifier.weight(1f)
+							)
+							Icon(
+								painterResource(id = R.drawable.icon_unfold_more),
+								contentDescription = "Open picker",
+								modifier = Modifier.padding(start = 6.dp),
+								tint = TextSecondary
+							)
+						}
+						DropdownMenu(
+							expanded = typeMenuOpened,
+							onDismissRequest = { typeMenuOpened = false },
+							modifier = Modifier
+								.padding(horizontal = 8.dp, vertical = 2.dp)
+								.fillMaxWidth()
+								.background(
+									color = com.example.moneymanager.ui.theme.Surface,
+									shape = RoundedCornerShape(4.dp)
+								)
+								.border(1.dp, SystemGray04, RoundedCornerShape(4.dp))
+						) {
+							DropdownMenuItem(
+								text = { Text(text = "Expense") },
+								onClick = {
+									addCategoryViewModel.setNewCategoryType("Expense")
+									typeMenuOpened = false
+								}
+							)
+							DropdownMenuItem(
+								text = { Text(text = "Income") },
+								onClick = {
+									addCategoryViewModel.setNewCategoryType("Income")
+									typeMenuOpened = false
+								}
+							)
+						}
+					}
+				}
+
 
 				Row(
 					modifier = Modifier
@@ -195,7 +291,7 @@ fun AddCategory(
 					) {}
 
 					Surface(
-						color = BackgroundElevated,
+						color = Color.Black,
 						modifier = Modifier
 							.height(44.dp)
 							.weight(1f)

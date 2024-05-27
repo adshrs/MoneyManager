@@ -3,5 +3,5 @@ package com.example.moneymanager.models.category
 data class CategoryRequest(
 	val name: String,
 	val color: String,
-	val userId: String
+	val type: String,
 )
